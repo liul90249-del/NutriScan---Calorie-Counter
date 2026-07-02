@@ -22,5 +22,11 @@ services:
         value: "30"
       - key: GOOGLE_API_KEY
         sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_BASE_URL
+        value: https://api.deepseek.com
+      - key: DEEPSEEK_COACH_MODEL
+        value: deepseek-v4-flash
       - key: NUTRISCAN_CLIENT_TOKEN
         sync: false

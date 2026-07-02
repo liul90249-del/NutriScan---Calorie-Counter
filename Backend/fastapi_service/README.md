@@ -61,6 +61,9 @@ GOOGLE_MODEL=gemini-2.5-flash
 GOOGLE_BASE_URL=https://generativelanguage.googleapis.com
 GOOGLE_MAX_OUTPUT_TOKENS=2000
 GOOGLE_THINKING_BUDGET=0
+DEEPSEEK_API_KEY=your_deepseek_key
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_COACH_MODEL=deepseek-v4-flash
 NUTRISCAN_CLIENT_TOKEN=use_a_long_random_server_token
 MAX_IMAGE_BYTES=6291456
 AI_REQUEST_TIMEOUT_SECONDS=30
@@ -140,6 +143,68 @@ AI_REQUEST_TIMEOUT_SECONDS=30
 ```
 
 Then restart the service. The iOS app does not need any code change; it still sends photos only to your NutriScan backend.
+
+## Premium nutrition coaching with DeepSeek
+
+The food photo endpoint can use Gemini while the premium coaching endpoint uses DeepSeek text reasoning.
+
+Endpoint:
+
+```text
+POST /coach/suggestions
+Authorization: Bearer <NUTRISCAN_CLIENT_TOKEN>
+```
+
+Request body:
+
+```json
+{
+  "locale": "zh-Hans",
+  "profile": {
+    "gender": "Female",
+    "height": 165,
+    "weight": 62,
+    "goalWeight": 56,
+    "activityLevel": "Lightly active",
+    "weeklyLossRate": 0.5,
+    "unit": "metric",
+    "isPremium": true
+  },
+  "recentMeals": [
+    {
+      "mealType": "Lunch",
+      "foodName": "Chicken rice bowl",
+      "calories": 620,
+      "protein": 32,
+      "carbs": 72,
+      "fat": 18,
+      "notes": "",
+      "createdAt": "2026-07-02T12:30:00Z"
+    }
+  ]
+}
+```
+
+Response body:
+
+```json
+{
+  "summary": "string",
+  "nextGoal": "string",
+  "cards": [
+    {
+      "title": "string",
+      "subtitle": "string",
+      "bullets": ["string"],
+      "suggestedFoods": ["string"],
+      "targetFocus": "protein",
+      "priority": "high"
+    }
+  ]
+}
+```
+
+Non-premium requests return `403 premium_required`.
 
 ## Switch to DeepSeek
 

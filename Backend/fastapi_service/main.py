@@ -68,6 +68,49 @@ class AnalyzeResponse(BaseModel):
     portionDescription: str = ""
 
 
+class CoachUserProfile(BaseModel):
+    gender: str = ""
+    height: float = Field(ge=0)
+    weight: float = Field(ge=0)
+    goalWeight: float = Field(ge=0)
+    activityLevel: str = ""
+    weeklyLossRate: float = Field(ge=0)
+    unit: str = "metric"
+    isPremium: bool = False
+
+
+class CoachMealEntry(BaseModel):
+    mealType: str
+    foodName: str
+    calories: int = Field(ge=0)
+    protein: float = Field(ge=0)
+    carbs: float = Field(ge=0)
+    fat: float = Field(ge=0)
+    notes: str = ""
+    createdAt: str = ""
+
+
+class CoachRequest(BaseModel):
+    locale: str
+    profile: CoachUserProfile
+    recentMeals: list[CoachMealEntry] = Field(default_factory=list, max_length=30)
+
+
+class CoachSuggestionCard(BaseModel):
+    title: str
+    subtitle: str
+    bullets: list[str] = Field(min_length=1, max_length=4)
+    suggestedFoods: list[str] = Field(default_factory=list, max_length=6)
+    targetFocus: str = ""
+    priority: str = "medium"
+
+
+class CoachResponse(BaseModel):
+    summary: str
+    nextGoal: str
+    cards: list[CoachSuggestionCard] = Field(min_length=1, max_length=5)
+
+
 def require_bearer_token(authorization: Optional[str]) -> None:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail={"error": "unauthorized", "message": "Missing bearer token."})
@@ -178,6 +221,138 @@ def parse_model_json(raw_text: str) -> dict[str, Any]:
             status_code=500,
             detail={"error": "bad_model_response", "message": "Model did not return valid JSON."},
         ) from exc
+
+
+def build_coach_prompt(payload: CoachRequest) -> str:
+    profile = payload.profile.model_dump()
+    meals = [meal.model_dump() for meal in payload.recentMeals]
+    return f"""
+You are a practical nutrition coach for a calorie tracking app.
+Return strict JSON only. Do not include markdown.
+
+Locale hint: {payload.locale}
+
+User profile JSON:
+{json.dumps(profile, ensure_ascii=False)}
+
+Recent meals JSON:
+{json.dumps(meals, ensure_ascii=False)}
+
+Rules:
+- This feature is for premium users, but do not mention payment, premium, or subscriptions.
+- Give safe, general nutrition coaching only. Do not diagnose disease, prescribe treatment, or make medical claims.
+- Use the user's locale language for all user-facing strings.
+- Base advice on the supplied profile and recent meals.
+- If recentMeals is empty, give starter goals and simple meal suggestions.
+- nextGoal must be one concrete goal for the next 24 hours.
+- cards must include 3 to 5 practical suggestion cards.
+- Each card must have:
+  - title: short action-oriented title
+  - subtitle: one sentence explaining why it matters
+  - bullets: 2 to 4 short actionable steps
+  - suggestedFoods: 3 to 6 foods or meal ideas
+  - targetFocus: one of "calories", "protein", "carbs", "fat", "fiber", "hydration", "consistency"
+  - priority: one of "high", "medium", "low"
+- Prefer concrete foods such as eggs, Greek yogurt, tofu, chicken breast, fish, beans, oats, rice bowls, vegetables, fruit, soup, potatoes, or salad bowls.
+- Avoid extreme dieting advice. Keep calorie deficits moderate.
+- Never tell the user exact medical requirements.
+
+JSON schema:
+{{
+  "summary": "string",
+  "nextGoal": "string",
+  "cards": [
+    {{
+      "title": "string",
+      "subtitle": "string",
+      "bullets": ["string"],
+      "suggestedFoods": ["string"],
+      "targetFocus": "protein",
+      "priority": "high"
+    }}
+  ]
+}}
+""".strip()
+
+
+def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
+    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail={"error": "provider_not_configured", "message": "DEEPSEEK_API_KEY is not configured."},
+        )
+
+    base_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").strip()
+    model = os.environ.get("DEEPSEEK_COACH_MODEL", os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash"))
+    deepseek_client = OpenAI(api_key=api_key, base_url=base_url)
+
+    try:
+        response = deepseek_client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You return strict JSON for a nutrition coaching app."},
+                {"role": "user", "content": build_coach_prompt(payload)},
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.2,
+            timeout=ai_request_timeout_seconds,
+        )
+    except APITimeoutError:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail={"error": "provider_error", "message": str(exc)[:1000]},
+        ) from exc
+
+    content = response.choices[0].message.content if response.choices else ""
+    return parse_model_json(content or "")
+
+
+def normalize_coach_result(result: dict[str, Any]) -> dict[str, Any]:
+    cards = result.get("cards")
+    if not isinstance(cards, list):
+        cards = []
+
+    normalized_cards: list[dict[str, Any]] = []
+    for card in cards[:5]:
+        if not isinstance(card, dict):
+            continue
+        bullets = card.get("bullets")
+        if not isinstance(bullets, list):
+            bullets = []
+        suggested_foods = card.get("suggestedFoods")
+        if not isinstance(suggested_foods, list):
+            suggested_foods = []
+        normalized_cards.append(
+            {
+                "title": str(card.get("title", "Next nutrition step")).strip() or "Next nutrition step",
+                "subtitle": str(card.get("subtitle", "")).strip(),
+                "bullets": [str(item).strip() for item in bullets if str(item).strip()][:4] or ["Review your next meal before saving."],
+                "suggestedFoods": [str(item).strip() for item in suggested_foods if str(item).strip()][:6],
+                "targetFocus": str(card.get("targetFocus", "consistency")).strip() or "consistency",
+                "priority": str(card.get("priority", "medium")).strip() or "medium",
+            }
+        )
+
+    if not normalized_cards:
+        normalized_cards = [
+            {
+                "title": "Build a balanced next meal",
+                "subtitle": "Start with a protein source, vegetables, and a steady carbohydrate.",
+                "bullets": ["Choose one protein source.", "Add vegetables or fruit.", "Keep portions moderate."],
+                "suggestedFoods": ["eggs", "tofu", "chicken", "rice bowl", "salad"],
+                "targetFocus": "consistency",
+                "priority": "medium",
+            }
+        ]
+
+    return {
+        "summary": str(result.get("summary", "Here are your next nutrition steps.")).strip(),
+        "nextGoal": str(result.get("nextGoal", "Log your next balanced meal.")).strip(),
+        "cards": normalized_cards,
+    }
 
 
 def call_provider(image_bytes: bytes, locale: str) -> dict[str, Any]:
@@ -488,4 +663,37 @@ def analyze_food(
         raise HTTPException(
             status_code=500,
             detail={"error": "bad_model_response", "message": "Model response shape did not match schema."},
+        ) from exc
+
+
+@app.post("/coach/suggestions", response_model=CoachResponse)
+def coach_suggestions(
+    payload: CoachRequest,
+    authorization: Optional[str] = Header(default=None),
+) -> CoachResponse:
+    require_bearer_token(authorization)
+    if not payload.profile.isPremium:
+        raise HTTPException(
+            status_code=403,
+            detail={"error": "premium_required", "message": "Nutrition coaching suggestions require an active subscription."},
+        )
+
+    executor = ThreadPoolExecutor(max_workers=1)
+    try:
+        future = executor.submit(call_deepseek_coach_provider, payload)
+        result = normalize_coach_result(future.result(timeout=ai_request_timeout_seconds))
+    except (APITimeoutError, FutureTimeoutError) as exc:
+        raise HTTPException(
+            status_code=504,
+            detail={"error": "model_timeout", "message": "Nutrition coaching model timed out."},
+        ) from exc
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+    try:
+        return CoachResponse(**result)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail={"error": "bad_model_response", "message": "Coach response shape did not match schema."},
         ) from exc
