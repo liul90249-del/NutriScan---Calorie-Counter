@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: nutriscan-ai-backend
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: AI_PROVIDER
+        value: google
+      - key: GOOGLE_MODEL
+        value: gemini-2.5-flash
+      - key: GOOGLE_BASE_URL
+        value: https://generativelanguage.googleapis.com
+      - key: GOOGLE_MAX_OUTPUT_TOKENS
+        value: "2000"
+      - key: GOOGLE_THINKING_BUDGET
+        value: "0"
+      - key: MAX_IMAGE_BYTES
+        value: "6291456"
+      - key: AI_REQUEST_TIMEOUT_SECONDS
+        value: "30"
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: NUTRISCAN_CLIENT_TOKEN
+        sync: false
