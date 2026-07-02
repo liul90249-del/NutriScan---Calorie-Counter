@@ -22,7 +22,7 @@ struct DashboardView: View {
                 protein: Int($0.protein.rounded()),
                 carbs: Int($0.carbs.rounded()),
                 fat: Int($0.fat.rounded()),
-                emoji: mealEmoji(for: $0.mealType)
+                emoji: foodEmoji(for: $0.foodName)
             )
         }
     }
@@ -208,7 +208,7 @@ struct DashboardView: View {
                     .tag(2)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 292)
+            .frame(height: 316)
 
             HStack(spacing: 8) {
                 ForEach(0..<3, id: \.self) { index in
@@ -254,12 +254,16 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text(localized("Nutrient Budget"))
                 .font(.headline)
+                .lineLimit(2)
+                .minimumScaleFactor(0.82)
+                .fixedSize(horizontal: false, vertical: true)
 
             macroProgress(title: localized("Protein"), current: totalProtein, target: targetProtein)
             macroProgress(title: localized("Carbs"), current: totalCarbs, target: targetCarbs)
             macroProgress(title: localized("Fat"), current: totalFat, target: targetFat)
         }
         .padding(20)
+        .frame(maxWidth: .infinity, minHeight: 250, alignment: .topLeading)
         .background(.white, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .padding(.horizontal, 24)
     }
@@ -268,12 +272,16 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text(localized("Healthy Habits"))
                 .font(.headline)
+                .lineLimit(2)
+                .minimumScaleFactor(0.82)
+                .fixedSize(horizontal: false, vertical: true)
 
             habitRow(icon: "clock.fill", emoji: "⏰", title: localized("Fasting"), subtitle: localized("2h 15m left"))
             habitRow(icon: "drop.fill", emoji: "💧", title: localized("Water"), subtitle: localized("1.5L / 2.5L"))
             habitRow(icon: "moon.fill", emoji: "😴", title: localized("Sleep"), subtitle: localized("7h 30m"))
         }
         .padding(20)
+        .frame(maxWidth: .infinity, minHeight: 250, alignment: .topLeading)
         .background(.white, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .padding(.horizontal, 24)
     }
@@ -481,14 +489,48 @@ struct DashboardView: View {
         }
     }
 
-    private func mealEmoji(for mealType: String) -> String {
-        switch mealType.lowercased() {
-        case "breakfast": return "🥣"
-        case "lunch": return "🍱"
-        case "dinner": return "🍽️"
-        case "snack": return "🫐"
-        default: return "🍴"
+    private func foodEmoji(for name: String) -> String {
+        let lowercasedName = name.lowercased()
+        if lowercasedName.contains("salad") || lowercasedName.contains("沙拉") || lowercasedName.contains("蔬菜") {
+            return "🥗"
         }
+        if lowercasedName.contains("rice") || lowercasedName.contains("饭") || lowercasedName.contains("米") {
+            return "🍚"
+        }
+        if lowercasedName.contains("noodle") || lowercasedName.contains("面") || lowercasedName.contains("ramen") {
+            return "🍜"
+        }
+        if lowercasedName.contains("chicken") || lowercasedName.contains("鸡") {
+            return "🍗"
+        }
+        if lowercasedName.contains("beef") || lowercasedName.contains("牛") || lowercasedName.contains("steak") {
+            return "🥩"
+        }
+        if lowercasedName.contains("fish") || lowercasedName.contains("鱼") || lowercasedName.contains("salmon") {
+            return "🐟"
+        }
+        if lowercasedName.contains("tofu") || lowercasedName.contains("豆腐") || lowercasedName.contains("豆") {
+            return "🧆"
+        }
+        if lowercasedName.contains("egg") || lowercasedName.contains("蛋") {
+            return "🍳"
+        }
+        if lowercasedName.contains("pizza") || lowercasedName.contains("披萨") {
+            return "🍕"
+        }
+        if lowercasedName.contains("burger") || lowercasedName.contains("汉堡") {
+            return "🍔"
+        }
+        if lowercasedName.contains("sandwich") || lowercasedName.contains("三明治") {
+            return "🥪"
+        }
+        if lowercasedName.contains("soup") || lowercasedName.contains("汤") {
+            return "🥣"
+        }
+        if lowercasedName.contains("fruit") || lowercasedName.contains("水果") || lowercasedName.contains("berry") {
+            return "🍓"
+        }
+        return "🍽️"
     }
 
     private func localized(_ key: String) -> String {

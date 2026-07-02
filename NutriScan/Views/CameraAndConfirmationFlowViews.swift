@@ -412,10 +412,13 @@ struct FoodConfirmationFlowView: View {
             .frame(height: 290)
             .overlay(
                 VStack(spacing: 12) {
-                    Text("🥗")
-                        .font(.system(size: 108))
+                    FoodCartoonIcon(analysis: analysis, size: 132)
                     Text(analysis.displayFoodName(locale: locale))
                         .font(.system(size: 28, weight: .semibold, design: .rounded))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.78)
+                        .padding(.horizontal, 24)
                     Text(localizedFormat("%@ %lld%%", analysis.source.localizedConfidenceLabel(locale: locale), Int(analysis.confidence * 100)))
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(.secondary)
@@ -658,4 +661,127 @@ struct FoodConfirmationFlowView: View {
             flow.finishFoodConfirmation()
         }
     }
+}
+
+private struct FoodCartoonIcon: View {
+    let analysis: FoodAnalysis
+    let size: CGFloat
+
+    private var symbol: String {
+        foodCartoonSymbol(
+            foodName: analysis.foodName,
+            identifiedItems: analysis.identifiedItems
+        )
+    }
+
+    private var colors: [Color] {
+        foodCartoonColors(
+            foodName: analysis.foodName,
+            identifiedItems: analysis.identifiedItems
+        )
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: colors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: size, height: size)
+                .shadow(color: colors.last?.opacity(0.22) ?? .black.opacity(0.12), radius: 18, y: 10)
+
+            Circle()
+                .stroke(.white.opacity(0.72), lineWidth: 5)
+                .frame(width: size - 14, height: size - 14)
+
+            Text(symbol)
+                .font(.system(size: size * 0.48))
+                .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+        }
+        .accessibilityLabel(Text(analysis.foodName))
+    }
+}
+
+private func foodCartoonSymbol(foodName: String, identifiedItems: [String]) -> String {
+    let text = ([foodName] + identifiedItems).joined(separator: " ").lowercased()
+
+    if text.contains("salad") || text.contains("沙拉") || text.contains("蔬菜") || text.contains("生菜") {
+        return "🥗"
+    }
+    if text.contains("rice") || text.contains("饭") || text.contains("米") {
+        return "🍚"
+    }
+    if text.contains("noodle") || text.contains("面") || text.contains("ramen") || text.contains("pasta") {
+        return "🍜"
+    }
+    if text.contains("chicken") || text.contains("鸡") {
+        return "🍗"
+    }
+    if text.contains("beef") || text.contains("牛") || text.contains("steak") {
+        return "🥩"
+    }
+    if text.contains("pork") || text.contains("猪") {
+        return "🍖"
+    }
+    if text.contains("fish") || text.contains("鱼") || text.contains("salmon") || text.contains("tuna") {
+        return "🐟"
+    }
+    if text.contains("shrimp") || text.contains("虾") || text.contains("seafood") || text.contains("海鲜") {
+        return "🍤"
+    }
+    if text.contains("tofu") || text.contains("豆腐") || text.contains("豆") {
+        return "🧆"
+    }
+    if text.contains("egg") || text.contains("蛋") {
+        return "🍳"
+    }
+    if text.contains("pizza") || text.contains("披萨") {
+        return "🍕"
+    }
+    if text.contains("burger") || text.contains("汉堡") {
+        return "🍔"
+    }
+    if text.contains("sandwich") || text.contains("三明治") || text.contains("toast") {
+        return "🥪"
+    }
+    if text.contains("soup") || text.contains("汤") || text.contains("stew") {
+        return "🥣"
+    }
+    if text.contains("cake") || text.contains("蛋糕") || text.contains("dessert") || text.contains("甜点") {
+        return "🍰"
+    }
+    if text.contains("fruit") || text.contains("水果") || text.contains("berry") || text.contains("苹果") {
+        return "🍓"
+    }
+
+    return "🍽️"
+}
+
+private func foodCartoonColors(foodName: String, identifiedItems: [String]) -> [Color] {
+    let text = ([foodName] + identifiedItems).joined(separator: " ").lowercased()
+
+    if text.contains("salad") || text.contains("沙拉") || text.contains("蔬菜") || text.contains("生菜") {
+        return [Color(hex: "#DCFCE7"), Color(hex: "#86EFAC")]
+    }
+    if text.contains("rice") || text.contains("饭") || text.contains("米") || text.contains("tofu") || text.contains("豆腐") {
+        return [Color(hex: "#FEF3C7"), Color(hex: "#FCD34D")]
+    }
+    if text.contains("fish") || text.contains("鱼") || text.contains("shrimp") || text.contains("虾") || text.contains("seafood") {
+        return [Color(hex: "#DBEAFE"), Color(hex: "#60A5FA")]
+    }
+    if text.contains("chicken") || text.contains("鸡") || text.contains("beef") || text.contains("牛") || text.contains("pork") || text.contains("猪") {
+        return [Color(hex: "#FFE4E6"), Color(hex: "#FB7185")]
+    }
+    if text.contains("noodle") || text.contains("面") || text.contains("pasta") || text.contains("pizza") || text.contains("披萨") {
+        return [Color(hex: "#FFEDD5"), Color(hex: "#FB923C")]
+    }
+    if text.contains("fruit") || text.contains("水果") || text.contains("berry") || text.contains("dessert") || text.contains("甜点") {
+        return [Color(hex: "#FCE7F3"), Color(hex: "#F472B6")]
+    }
+
+    return [Color(hex: "#F3F4F6"), Color(hex: "#D1D5DB")]
 }
