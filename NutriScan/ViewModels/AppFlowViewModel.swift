@@ -52,17 +52,25 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
 @MainActor
 final class AppFlowViewModel: ObservableObject {
+    private static let completedOnboardingKey = "nutriscan.onboarding.completed"
+    private static let profileStorageKey = "nutriscan.profile.payload"
     private static let premiumKey = "nutriscan.profile.is_premium"
     private static let premiumPlanKey = "nutriscan.profile.premium_plan"
+    private static let premiumExpirationDateKey = "nutriscan.profile.premium_expiration_date"
     private static let freeAIScansRemainingKey = "nutriscan.free_ai_scans_remaining"
+    private static let bodyDataReviewPromptedKey = "nutriscan.review.body_data_prompted"
     private static let defaultFreeAIScans = 2
     #if DEBUG
+    private static let debugPremiumSimulationKey = "nutriscan.debug.premium_simulation"
     private static let testAccountUnlimitedAIScans = true
     #else
     private static let testAccountUnlimitedAIScans = false
     #endif
-    private static let annualProductID = "com.liuzhigang.nutriscan.pro.annual"
-    private static let monthlyProductID = "com.liuzhigang.nutriscan.pro.monthly"
+    private static let annualProductID = "com.liuzhigang.nutriscan.pro.annuala"
+    private static let monthlyProductID = "com.liuzhigang.nutriscan.pro.monthlya"
+    /// Discounted annual product surfaced only in the win-back offer. Entitles
+    /// the same annual premium; create this ID in App Store Connect.
+    private static let discountedAnnualProductID = "com.liuzhigang.nutriscan.pro.annualpromoa"
 
     enum Screen: Hashable {
         case welcome
@@ -81,7 +89,7 @@ final class AppFlowViewModel: ObservableObject {
         case foodConfirmation
     }
 
-    struct UserProfile {
+    struct UserProfile: Codable {
         var painPoints: Set<String> = []
         var gender: String = ""
         var height: Double = 170
@@ -133,14 +141,15 @@ final class AppFlowViewModel: ObservableObject {
         }
     }
 
-    enum UnitSystem: String, CaseIterable {
+    enum UnitSystem: String, CaseIterable, Codable {
         case metric
         case imperial
     }
 
-    @Published var currentScreen: Screen = .welcome
+    @Published var currentScreen: Screen = UserDefaults.standard.bool(forKey: completedOnboardingKey) ? .dashboard : .welcome
     @Published var profile = UserProfile() {
         didSet {
+            saveProfile()
             UserDefaults.standard.set(profile.isPremium, forKey: Self.premiumKey)
         }
     }
@@ -151,11 +160,24 @@ final class AppFlowViewModel: ObservableObject {
     @Published private(set) var cloudAPIKey = NutriScanBackendConfig.clientToken
     @Published private(set) var cloudRecognitionEnabled = true
     @Published var premiumPlan: PremiumPlan? = nil
+    @Published private(set) var premiumExpirationDate: Date? = nil
     @Published var availableProducts: [PremiumPlan: Product] = [:]
+    /// Discounted annual product for the win-back offer, if configured/loaded.
+    @Published var discountedAnnualProduct: Product?
     @Published var purchaseInFlight = false
     @Published var purchaseErrorMessage = ""
+    /// True when the most recent `purchase(_:)` ended because the user cancelled
+    /// the system payment sheet — used to offer a one-time win-back discount.
+    private var lastPurchaseWasUserCancel = false
     @Published var productsLoaded = false
+    /// Whether the user can still redeem the annual product's introductory free
+    /// trial (false once they've used it before). Refreshed when products load.
+    @Published var isEligibleForAnnualIntroOffer = true
+    @Published var shouldRequestBodyDataReview = false
     @Published private(set) var freeAIScansRemaining = defaultFreeAIScans
+    #if DEBUG
+    @Published private(set) var isDebugPremiumSimulationEnabled = UserDefaults.standard.bool(forKey: debugPremiumSimulationKey)
+    #endif
 
     enum MainTab: String, CaseIterable {
         case today
@@ -183,10 +205,23 @@ final class AppFlowViewModel: ObservableObject {
         cloudRecognitionConfig.isReady ? AppLocalization.current("Connected") : AppLocalization.current("Not connected")
     }
 
+    var hasActivePremium: Bool {
+        guard profile.isPremium else { return false }
+        guard let premiumExpirationDate else { return true }
+        return premiumExpirationDate > Date()
+    }
+
     init() {
+        if let data = UserDefaults.standard.data(forKey: Self.profileStorageKey),
+           let savedProfile = try? JSONDecoder().decode(UserProfile.self, from: data) {
+            profile = savedProfile
+        }
         profile.isPremium = UserDefaults.standard.bool(forKey: Self.premiumKey)
         if let rawPlan = UserDefaults.standard.string(forKey: Self.premiumPlanKey) {
             premiumPlan = PremiumPlan(rawValue: rawPlan)
+        }
+        if let savedExpirationDate = UserDefaults.standard.object(forKey: Self.premiumExpirationDateKey) as? Date {
+            premiumExpirationDate = savedExpirationDate
         }
         if UserDefaults.standard.object(forKey: Self.freeAIScansRemainingKey) == nil {
             UserDefaults.standard.set(Self.defaultFreeAIScans, forKey: Self.freeAIScansRemainingKey)
@@ -201,26 +236,50 @@ final class AppFlowViewModel: ObservableObject {
 
     func goToNextOnboardingStep() {
         switch currentScreen {
-        case .welcome: currentScreen = .painPoints
-        case .painPoints: currentScreen = .gender
-        case .gender: currentScreen = .heightWeight
-        case .heightWeight: currentScreen = .activity
-        case .activity: currentScreen = .goal
-        case .goal: currentScreen = .speed
-        case .speed: currentScreen = .healthConnect
-        case .healthConnect: currentScreen = .loading
-        case .loading: currentScreen = .socialProof
-        case .socialProof: currentScreen = .paywall
+        case .welcome:
+            AnalyticsService.logOnboardingStep("welcome")
+            currentScreen = .painPoints
+        case .painPoints:
+            AnalyticsService.logOnboardingStep("pain_points")
+            currentScreen = .gender
+        case .gender:
+            AnalyticsService.logOnboardingStep("gender")
+            currentScreen = .heightWeight
+        case .heightWeight:
+            AnalyticsService.logOnboardingStep("height_weight")
+            currentScreen = .activity
+            requestBodyDataReviewIfNeeded()
+        case .activity:
+            AnalyticsService.logOnboardingStep("activity")
+            currentScreen = .goal
+        case .goal:
+            AnalyticsService.logOnboardingStep("goal")
+            currentScreen = .speed
+        case .speed:
+            AnalyticsService.logOnboardingStep("speed")
+            currentScreen = .healthConnect
+        case .healthConnect:
+            AnalyticsService.logOnboardingStep("health_connect")
+            currentScreen = .loading
+        case .loading:
+            AnalyticsService.logOnboardingStep("loading")
+            currentScreen = .socialProof
+        case .socialProof:
+            AnalyticsService.logOnboardingStep("social_proof")
+            AnalyticsService.logPaywallViewed(source: "onboarding")
+            currentScreen = .paywall
         default:
             break
         }
     }
 
     func skipPaywall() {
+        UserDefaults.standard.set(true, forKey: Self.completedOnboardingKey)
         currentScreen = .dashboard
     }
 
     func openCamera() {
+        AnalyticsService.logCameraOpened()
         currentScreen = .camera
     }
 
@@ -238,14 +297,32 @@ final class AppFlowViewModel: ObservableObject {
         currentScreen = .dashboard
     }
 
-    func activatePremium(plan: PremiumPlan) {
+    func completeOnboarding() {
+        UserDefaults.standard.set(true, forKey: Self.completedOnboardingKey)
+        currentScreen = .dashboard
+    }
+
+    func markBodyDataReviewRequestHandled() {
+        AnalyticsService.logReviewPromptRequested(source: "body_data_completed")
+        UserDefaults.standard.set(true, forKey: Self.bodyDataReviewPromptedKey)
+        shouldRequestBodyDataReview = false
+    }
+
+    func activatePremium(plan: PremiumPlan, expirationDate: Date? = nil) {
         profile.isPremium = true
         premiumPlan = plan
+        premiumExpirationDate = expirationDate
         UserDefaults.standard.set(plan.rawValue, forKey: Self.premiumPlanKey)
+        if let expirationDate {
+            UserDefaults.standard.set(expirationDate, forKey: Self.premiumExpirationDateKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: Self.premiumExpirationDateKey)
+        }
     }
 
     func restorePremium() async {
         purchaseErrorMessage = ""
+        AnalyticsService.logRestorePurchaseTapped()
 
         do {
             try await AppStore.sync()
@@ -258,47 +335,124 @@ final class AppFlowViewModel: ObservableObject {
     func downgradeToFree() {
         profile.isPremium = false
         premiumPlan = nil
+        premiumExpirationDate = nil
         UserDefaults.standard.removeObject(forKey: Self.premiumPlanKey)
+        UserDefaults.standard.removeObject(forKey: Self.premiumExpirationDateKey)
+        #if DEBUG
+        isDebugPremiumSimulationEnabled = false
+        UserDefaults.standard.set(false, forKey: Self.debugPremiumSimulationKey)
+        #endif
         if recognitionMode == .cloudPreferred {
             recognitionMode = .smartHybrid
         }
     }
 
+    #if DEBUG
+    func enableDebugPremiumSimulation() {
+        let expirationDate = Calendar.current.date(byAdding: .day, value: 30, to: Date())
+        activatePremium(plan: .monthly, expirationDate: expirationDate)
+        isDebugPremiumSimulationEnabled = true
+        UserDefaults.standard.set(true, forKey: Self.debugPremiumSimulationKey)
+    }
+    #endif
+
     var hasPremiumAnalytics: Bool {
-        profile.isPremium
+        hasActivePremium
     }
 
     var hasPremiumSuggestions: Bool {
-        profile.isPremium
+        hasActivePremium
     }
 
     var hasPremiumCloudRecognition: Bool {
-        profile.isPremium
+        hasActivePremium
     }
 
     var canUseAIScan: Bool {
-        Self.testAccountUnlimitedAIScans || profile.isPremium || freeAIScansRemaining > 0
+        Self.testAccountUnlimitedAIScans || hasActivePremium || freeAIScansRemaining > 0
     }
 
     var aiScanAccessText: String {
         guard !Self.testAccountUnlimitedAIScans else {
             return AppLocalization.current("Unlimited AI scans included with Pro")
         }
-        guard !profile.isPremium else {
+        guard !hasActivePremium else {
             return AppLocalization.current("Unlimited AI scans included with Pro")
         }
         return AppLocalization.currentFormat("%d free AI scans left", freeAIScansRemaining)
     }
 
+    func selectGender(_ gender: String) {
+        profile.gender = gender
+        AnalyticsService.logGenderSelected(gender)
+
+        switch gender {
+        case "Male":
+            profile.height = 175
+            profile.weight = 75
+            profile.goalWeight = 70
+        case "Female":
+            profile.height = 162
+            profile.weight = 58
+            profile.goalWeight = 54
+        default:
+            profile.height = 170
+            profile.weight = 65
+            profile.goalWeight = 60
+        }
+    }
+
     func consumeFreeAIScanIfNeeded(for analysis: FoodAnalysis) {
         guard !Self.testAccountUnlimitedAIScans else { return }
-        guard !profile.isPremium, analysis.source == .cloudAI, freeAIScansRemaining > 0 else { return }
+        guard !hasActivePremium, analysis.source == .cloudAI, freeAIScansRemaining > 0 else { return }
         freeAIScansRemaining -= 1
         UserDefaults.standard.set(freeAIScansRemaining, forKey: Self.freeAIScansRemainingKey)
     }
 
+    private func saveProfile() {
+        guard let data = try? JSONEncoder().encode(profile) else { return }
+        UserDefaults.standard.set(data, forKey: Self.profileStorageKey)
+    }
+
+    private func requestBodyDataReviewIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: Self.bodyDataReviewPromptedKey) else { return }
+        shouldRequestBodyDataReview = true
+    }
+
     var annualDisplayPrice: String {
         availableProducts[.annual]?.displayPrice ?? PremiumPlan.annual.price
+    }
+
+    /// The annual product's introductory offer (free trial), if configured in
+    /// App Store Connect / the StoreKit config file.
+    var annualIntroductoryOffer: Product.SubscriptionOffer? {
+        availableProducts[.annual]?.subscription?.introductoryOffer
+    }
+
+    /// True when the annual plan currently offers a redeemable free trial.
+    var annualHasFreeTrial: Bool {
+        guard let offer = annualIntroductoryOffer, offer.paymentMode == .freeTrial else { return false }
+        return isEligibleForAnnualIntroOffer
+    }
+
+    /// Localized label for the annual free trial, e.g. "3-day free trial".
+    /// Returns nil when no redeemable trial is available.
+    var annualFreeTrialText: String? {
+        guard annualHasFreeTrial, let offer = annualIntroductoryOffer else { return nil }
+        return Self.freeTrialText(for: offer.period)
+    }
+
+    private static func freeTrialText(for period: Product.SubscriptionPeriod) -> String {
+        let count = period.value
+        let key: String
+        switch period.unit {
+        case .day: key = "%lld-day free trial"
+        case .week: key = "%lld-week free trial"
+        case .month: key = "%lld-month free trial"
+        case .year: key = "%lld-year free trial"
+        @unknown default: key = "%lld-day free trial"
+        }
+        return AppLocalization.currentFormat(key, count)
     }
 
     var monthlyDisplayPrice: String {
@@ -306,8 +460,12 @@ final class AppFlowViewModel: ObservableObject {
     }
 
     var storeConfigurationHint: String? {
+        #if DEBUG
         guard !productsLoaded else { return nil }
         return AppLocalization.current("StoreKit products are not available yet. Add the subscription product IDs in App Store Connect or a StoreKit config file.")
+        #else
+        return nil
+        #endif
     }
 
     func priceText(for plan: PremiumPlan) -> String {
@@ -325,16 +483,38 @@ final class AppFlowViewModel: ObservableObject {
     }
 
     func purchase(plan: PremiumPlan) async -> Bool {
-        purchaseErrorMessage = ""
-
         if !productsLoaded {
             await refreshStoreKitState()
         }
 
         guard let product = availableProducts[plan] else {
             purchaseErrorMessage = AppLocalization.current("Subscription product not found. Check your product IDs in App Store Connect.")
+            AnalyticsService.logPurchaseFailed(plan: plan, reason: "product_not_found")
             return false
         }
+
+        return await purchase(product: product, plan: plan)
+    }
+
+    /// Purchases the discounted annual product used by the win-back offer.
+    /// Falls back to the regular annual product if the promo isn't configured,
+    /// so the offer's CTA always does something.
+    func purchaseDiscountedAnnual() async -> Bool {
+        if !productsLoaded {
+            await refreshStoreKitState()
+        }
+
+        guard let product = discountedAnnualProduct else {
+            return await purchase(plan: .annual)
+        }
+
+        return await purchase(product: product, plan: .annual)
+    }
+
+    private func purchase(product: Product, plan: PremiumPlan) async -> Bool {
+        purchaseErrorMessage = ""
+        lastPurchaseWasUserCancel = false
+        AnalyticsService.logPurchaseStarted(plan: plan)
 
         purchaseInFlight = true
         defer { purchaseInFlight = false }
@@ -345,22 +525,37 @@ final class AppFlowViewModel: ObservableObject {
             switch result {
             case .success(let verification):
                 let transaction = try checkVerified(verification)
-                applyEntitlement(for: transaction.productID)
+                applyEntitlement(for: transaction)
                 await transaction.finish()
+                AnalyticsService.logPurchaseCompleted(plan: plan)
                 return true
             case .userCancelled:
+                lastPurchaseWasUserCancel = true
+                AnalyticsService.logPurchaseFailed(plan: plan, reason: "user_cancelled")
                 return false
             case .pending:
                 purchaseErrorMessage = AppLocalization.current("Purchase is pending approval.")
+                AnalyticsService.logPurchaseFailed(plan: plan, reason: "pending")
                 return false
             @unknown default:
                 purchaseErrorMessage = AppLocalization.current("Unknown purchase result.")
+                AnalyticsService.logPurchaseFailed(plan: plan, reason: "unknown")
                 return false
             }
         } catch {
             purchaseErrorMessage = error.localizedDescription
+            AnalyticsService.logPurchaseFailed(plan: plan, reason: String(describing: type(of: error)))
             return false
         }
+    }
+
+    /// Returns `true` whenever the user just cancelled the system payment sheet,
+    /// signalling that the win-back discount offer should be shown. Re-triggers
+    /// on every cancellation (the offer may appear multiple times).
+    func consumePendingDiscountOffer() -> Bool {
+        guard lastPurchaseWasUserCancel else { return false }
+        lastPurchaseWasUserCancel = false
+        return true
     }
 
     private func refreshStoreKitState() async {
@@ -370,8 +565,9 @@ final class AppFlowViewModel: ObservableObject {
 
     private func loadProducts() async {
         do {
-            let products = try await Product.products(for: [Self.annualProductID, Self.monthlyProductID])
+            let products = try await Product.products(for: [Self.annualProductID, Self.monthlyProductID, Self.discountedAnnualProductID])
             var mapped: [PremiumPlan: Product] = [:]
+            var promo: Product?
 
             for product in products {
                 switch product.id {
@@ -379,13 +575,22 @@ final class AppFlowViewModel: ObservableObject {
                     mapped[.annual] = product
                 case Self.monthlyProductID:
                     mapped[.monthly] = product
+                case Self.discountedAnnualProductID:
+                    promo = product
                 default:
                     break
                 }
             }
 
             availableProducts = mapped
+            discountedAnnualProduct = promo
             productsLoaded = !mapped.isEmpty
+
+            if let subscription = mapped[.annual]?.subscription {
+                isEligibleForAnnualIntroOffer = await subscription.isEligibleForIntroOffer
+            } else {
+                isEligibleForAnnualIntroOffer = false
+            }
         } catch {
             availableProducts = [:]
             productsLoaded = false
@@ -395,16 +600,23 @@ final class AppFlowViewModel: ObservableObject {
 
     private func refreshEntitlements() async {
         var resolvedPlan: PremiumPlan?
+        var resolvedExpirationDate: Date?
 
         for await result in Transaction.currentEntitlements {
             guard let transaction = try? checkVerified(result) else { continue }
-            if let plan = plan(for: transaction.productID) {
+            guard let plan = plan(for: transaction.productID),
+                  isActiveEntitlement(transaction) else {
+                continue
+            }
+
+            if shouldPrefer(transactionExpirationDate: transaction.expirationDate, over: resolvedExpirationDate) {
                 resolvedPlan = plan
+                resolvedExpirationDate = transaction.expirationDate
             }
         }
 
         if let resolvedPlan {
-            activatePremium(plan: resolvedPlan)
+            activatePremium(plan: resolvedPlan, expirationDate: resolvedExpirationDate)
         } else {
             downgradeToFree()
         }
@@ -413,19 +625,45 @@ final class AppFlowViewModel: ObservableObject {
     private func observeTransactions() async {
         for await result in Transaction.updates {
             guard let transaction = try? checkVerified(result) else { continue }
-            applyEntitlement(for: transaction.productID)
+            if isActiveEntitlement(transaction) {
+                applyEntitlement(for: transaction)
+            } else {
+                await refreshEntitlements()
+            }
             await transaction.finish()
         }
     }
 
-    private func applyEntitlement(for productID: String) {
-        guard let plan = plan(for: productID) else { return }
-        activatePremium(plan: plan)
+    private func applyEntitlement(for transaction: Transaction) {
+        guard let plan = plan(for: transaction.productID),
+              isActiveEntitlement(transaction) else {
+            return
+        }
+        activatePremium(plan: plan, expirationDate: transaction.expirationDate)
+    }
+
+    private func isActiveEntitlement(_ transaction: Transaction) -> Bool {
+        guard transaction.revocationDate == nil else { return false }
+        guard let expirationDate = transaction.expirationDate else { return true }
+        return expirationDate > Date()
+    }
+
+    private func shouldPrefer(transactionExpirationDate: Date?, over currentExpirationDate: Date?) -> Bool {
+        switch (transactionExpirationDate, currentExpirationDate) {
+        case let (new?, current?):
+            return new > current
+        case (_?, nil):
+            return true
+        case (nil, nil):
+            return true
+        case (nil, _?):
+            return false
+        }
     }
 
     private func plan(for productID: String) -> PremiumPlan? {
         switch productID {
-        case Self.annualProductID:
+        case Self.annualProductID, Self.discountedAnnualProductID:
             return .annual
         case Self.monthlyProductID:
             return .monthly

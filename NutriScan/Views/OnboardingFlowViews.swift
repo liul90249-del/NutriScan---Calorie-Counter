@@ -175,7 +175,7 @@ struct GenderFlowView: View {
                             title: option,
                             isSelected: flow.profile.gender == option
                         ) {
-                            flow.profile.gender = option
+                            flow.selectGender(option)
                         }
                     }
                 }
@@ -337,6 +337,7 @@ struct WeightSpeedFlowView: View {
 struct HealthConnectFlowView: View {
     @EnvironmentObject private var flow: AppFlowViewModel
     @Environment(\.locale) private var locale
+    @State private var isRequestingHealthAccess = false
 
     var body: some View {
         FlowPageContainer {
@@ -350,7 +351,7 @@ struct HealthConnectFlowView: View {
                 Text(localized("Connect Apple Health"))
                     .font(.system(size: 32, weight: .semibold, design: .rounded))
 
-                Text(localized("Sync activity and body metrics later if you want more accurate recommendations."))
+                Text(localized("Allow NutriScan to read Apple Health active energy and send helpful reminders for your daily routine."))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: 320)
@@ -359,9 +360,16 @@ struct HealthConnectFlowView: View {
 
                 VStack(spacing: 12) {
                     FlowPrimaryButton(title: "Connect") {
-                        flow.goToNextOnboardingStep()
+                        Task {
+                            isRequestingHealthAccess = true
+                            try? await HealthKitService.requestAuthorization()
+                            _ = try? await NotificationPermissionService.requestAuthorization()
+                            isRequestingHealthAccess = false
+                            flow.goToNextOnboardingStep()
+                        }
                     }
                     .background(Color.black, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .disabled(isRequestingHealthAccess)
 
                     Button(localized("Skip for now")) {
                         flow.goToNextOnboardingStep()
@@ -386,7 +394,7 @@ struct FakeLoadingFlowView: View {
         FlowPageContainer {
             VStack(spacing: 22) {
                 Spacer()
-                ProgressView(value: progress)
+                ProgressView(value: clampedProgress(progress), total: 1)
                     .tint(.orange)
                     .scaleEffect(x: 1, y: 2.8, anchor: .center)
                 Text(localized("Building your plan..."))
@@ -462,82 +470,121 @@ struct PaywallFlowView: View {
 
     var body: some View {
         FlowPageContainer {
-            VStack(alignment: .leading, spacing: 20) {
-                Text(localized("Unlock your full AI nutrition coach"))
-                    .font(.system(size: 32, weight: .semibold, design: .rounded))
+            VStack(spacing: 22) {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(localized("Unlock your full AI nutrition coach"))
+                        .font(.system(size: 32, weight: .semibold, design: .rounded))
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    paywallLine("Unlimited photo meal scans")
-                    paywallLine("Smart calorie and macro estimates")
-                    paywallLine("Insights, suggestions, and long-term progress")
-                }
-                .padding(18)
-                .background(.white, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(localized("Annual Premium"))
-                        .font(.headline)
-                    Text(flow.availableProducts[.annual]?.displayPrice ?? localized("$29.99 / year"))
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
-                    Text(localized("3-day free trial, then yearly renewal."))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(18)
-                .background(Color.black, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .foregroundStyle(.white)
-
-                Spacer()
-
-                VStack(spacing: 12) {
-                    if flow.storeConfigurationHint != nil {
-                        Text(localized("StoreKit products are not available yet. Add the subscription product IDs in App Store Connect or a StoreKit config file."))
-                            .font(.footnote)
-                            .foregroundStyle(.orange)
+                    VStack(alignment: .leading, spacing: 12) {
+                        paywallLine("Unlimited photo meal scans")
+                        paywallLine("Smart calorie and macro estimates")
+                        paywallLine("Insights, suggestions, and long-term progress")
                     }
+                    .padding(18)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
 
-                    if !flow.purchaseErrorMessage.isEmpty {
-                        Text(flow.purchaseErrorMessage)
-                            .font(.footnote)
-                            .foregroundStyle(.red)
-                    }
-
-                    Button {
-                        guard !purchaseTaskRunning else { return }
-                        purchaseTaskRunning = true
-                        Task {
-                            let purchased = await flow.purchase(plan: .annual)
-                            purchaseTaskRunning = false
-                            if purchased {
-                                flow.currentScreen = .dashboard
-                            }
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(localized("Annual Premium"))
+                            .font(.headline)
+                        Text(flow.availableProducts[.annual]?.displayPrice ?? localized("$29.99 / year"))
+                            .font(.system(size: 38, weight: .bold, design: .rounded))
+                        if let trial = flow.annualFreeTrialText {
+                            Text(trial)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(Color(hex: "#7CE0A0"))
                         }
-                    } label: {
-                        HStack {
-                            if purchaseTaskRunning || flow.purchaseInFlight {
-                                ProgressView()
-                                    .tint(.white)
-                            }
-                            Text(localized("Start Free Trial"))
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(Color.black, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                        .foregroundStyle(.white)
+                        Text(localized("Auto-renewable subscription. Manage or cancel in App Store settings."))
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.68))
                     }
-                    .buttonStyle(.plain)
-                    .disabled(purchaseTaskRunning || flow.purchaseInFlight)
-
-                    Button(localized("Maybe Later")) {
-                        flow.skipPaywall()
-                    }
-                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(22)
+                    .background(Color.black, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .foregroundStyle(.white)
                 }
+
+                Spacer(minLength: 12)
+
+                paywallActions
             }
         }
         .task {
             await flow.loadProductsIfNeeded()
         }
+    }
+
+    private var paywallActions: some View {
+        VStack(spacing: 12) {
+            if flow.storeConfigurationHint != nil {
+                Text(localized("StoreKit products are not available yet. Add the subscription product IDs in App Store Connect or a StoreKit config file."))
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+                    .multilineTextAlignment(.center)
+            }
+
+            if !flow.purchaseErrorMessage.isEmpty {
+                Text(flow.purchaseErrorMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+            }
+
+            Button {
+                guard !purchaseTaskRunning else { return }
+                purchaseTaskRunning = true
+                Task {
+                    let purchased = await flow.purchase(plan: .annual)
+                    purchaseTaskRunning = false
+                    if purchased {
+                        flow.completeOnboarding()
+                    }
+                }
+            } label: {
+                HStack {
+                    if purchaseTaskRunning || flow.purchaseInFlight {
+                        ProgressView()
+                            .tint(.white)
+                    }
+                    Text(flow.annualFreeTrialText != nil ? localized("Start free trial") : localized("Subscribe"))
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(Color.black, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .foregroundStyle(.white)
+            }
+            .buttonStyle(.plain)
+            .disabled(purchaseTaskRunning || flow.purchaseInFlight)
+
+            Button(localized("Maybe Later")) {
+                flow.skipPaywall()
+            }
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(.secondary)
+
+            Button(localized("Restore Purchase")) {
+                Task {
+                    await flow.restorePremium()
+                    if flow.hasActivePremium {
+                        flow.completeOnboarding()
+                    }
+                }
+            }
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(.secondary)
+
+            HStack(spacing: 8) {
+                Link(localized("Privacy Policy"), destination: URL(string: NutriScanBackendConfig.legalPrivacyPolicyURL)!)
+                Text("·")
+                    .foregroundStyle(.secondary)
+                Link(localized("Terms of Use"), destination: URL(string: NutriScanBackendConfig.legalTermsOfUseURL)!)
+            }
+            .font(.footnote.weight(.medium))
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .multilineTextAlignment(.center)
     }
 
     private func paywallLine(_ text: String) -> some View {

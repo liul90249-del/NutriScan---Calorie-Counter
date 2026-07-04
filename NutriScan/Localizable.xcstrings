@@ -1,6 +1,263 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "This is your one-time exclusive offer. Choose the annual plan and save %lld%%." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "This is your one-time exclusive offer. Choose the annual plan and save %lld%%." }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "这是为您准备的专属优惠，仅此一次！选择年度计划，立省 %lld%%。" }
+        }
+      }
+    },
+    "%@ / week" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "%@ / week" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "%@/周" }
+        }
+      }
+    },
+    "12 months · %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "12 months · %@" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "12 个月 · %@" }
+        }
+      }
+    },
+    "%lld-day free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld-day free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld 天免费试用" }
+        }
+      }
+    },
+    "%lld-week free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld-week free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld 周免费试用" }
+        }
+      }
+    },
+    "%lld-month free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld-month free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld 个月免费试用" }
+        }
+      }
+    },
+    "%lld-year free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld-year free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld 年免费试用" }
+        }
+      }
+    },
+    "Your exclusive limited-time offer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Your exclusive limited-time offer" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "您的专属限时优惠" }
+        }
+      }
+    },
+    "Limited-time offer ends in %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Limited-time offer ends in %@" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "限时优惠将在 %@ 后结束" }
+        }
+      }
+    },
+    "Save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Save" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "立减" }
+        }
+      }
+    },
+    "$1.73 / week" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "$1.73 / week" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "$1.73/周" }
+        }
+      }
+    },
+    "$0.35 / week" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "$0.35 / week" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "$0.35/周" }
+        }
+      }
+    },
+    "This is your one-time exclusive offer. Choose the annual plan and save 80%." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "This is your one-time exclusive offer. Choose the annual plan and save 80%." }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "这是为您准备的专属优惠，仅此一次！选择年度计划，立省 80%。" }
+        }
+      }
+    },
+    "Free trial enabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Free trial enabled" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "已开启免费试用" }
+        }
+      }
+    },
+    "Enable free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Enable free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "开启免费试用" }
+        }
+      }
+    },
+    "3-day free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "3-day free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "3 天免费试用" }
+        }
+      }
+    },
+    "Annual plan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Annual plan" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "年度计划" }
+        }
+      }
+    },
+    "12 months · US$17.99" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "12 months · US$17.99" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "12 个月 · US$17.99" }
+        }
+      }
+    },
+    "Start free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "Start free trial" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "开始免费试用" }
+        }
+      }
+    },
+    "No payment due now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "No payment due now" }
+        },
+        "zh-Hans" : {
+          "stringUnit" : { "state" : "translated", "value" : "现在无需付款" }
+        }
+      }
+    },
+    "Your diet and health — our top priority and care" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your diet and health — our top priority and care"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的饮食与健康——我们的首要任务与关怀"
+          }
+        }
+      }
+    },
+    "Start 3-day free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start 3-day free trial"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始 3 天免费试用"
+          }
+        }
+      }
+    },
+    "·" : {
+
+    },
     "“%@”" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -140,66 +397,36 @@
       }
     },
     "%@ active" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ active"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ active"
           }
         },
         "es" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ activo"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ activo"
           }
         },
         "it" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ attivo"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ attivo"
           }
         },
         "ja" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ 利用中"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 有効"
           }
         },
         "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ 已启用"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已启用"
           }
         }
       }
@@ -239,66 +466,36 @@
       }
     },
     "%@ kg to goal" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ kg to goal"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ kg to goal"
           }
         },
         "es" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ kg para la meta"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ kg hasta el objetivo"
           }
         },
         "it" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%@ kg al traguardo"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ kg all’obiettivo"
           }
         },
         "ja" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "目標まで %@ kg"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目標まで %@ kg"
           }
         },
         "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "距离目标还差 %@ 公斤"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距离目标还差 %@ 公斤"
           }
         }
       }
@@ -349,25 +546,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ leaned high-carb without enough protein."
+            "value" : "%@ tuvo muchos carbohidratos y poca proteína."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ leaned high-carb without enough protein."
+            "value" : "%@ era ricco di carboidrati ma con poche proteine."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ leaned high-carb without enough protein."
+            "value" : "%@ は炭水化物が多く、たんぱく質が不足していました。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ leaned high-carb without enough protein."
+            "value" : "%@ 碳水偏高，但蛋白质不足。"
           }
         }
       }
@@ -384,25 +581,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ logged only %2$lldg protein."
+            "value" : "%1$@ registró solo %2$lldg de proteína."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ logged only %2$lldg protein."
+            "value" : "%1$@ ha registrato solo %2$lldg di proteine."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ logged only %2$lldg protein."
+            "value" : "%1$@ のたんぱく質は %2$lldg のみです。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ logged only %2$lldg protein."
+            "value" : "%1$@ 只记录了 %2$lldg 蛋白质。"
           }
         }
       }
@@ -437,7 +634,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ summary"
+            "value" : "%@总结"
           }
         }
       }
@@ -454,25 +651,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ was your heaviest recent entry at %2$lld kcal."
+            "value" : "%1$@ fue tu registro reciente más alto con %2$lld kcal."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ was your heaviest recent entry at %2$lld kcal."
+            "value" : "%1$@ è stato il pasto recente più alto con %2$lld kcal."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ was your heaviest recent entry at %2$lld kcal."
+            "value" : "%1$@ は最近の記録で最も高く、%2$lld kcal でした。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ was your heaviest recent entry at %2$lld kcal."
+            "value" : "%1$@ 是你最近热量最高的一餐，约 %2$lld 千卡。"
           }
         }
       }
@@ -546,6 +743,41 @@
         }
       }
     },
+    "%lld days" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld days"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld días"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld giorni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld日"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld天"
+          }
+        }
+      }
+    },
     "%lld entries" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -576,7 +808,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld entries"
+            "value" : "%lld 条记录"
           }
         }
       }
@@ -611,7 +843,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld kcal"
+            "value" : "%lld 千卡"
           }
         }
       }
@@ -716,7 +948,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld meals logged"
+            "value" : "已记录 %lld 餐"
           }
         }
       }
@@ -751,7 +983,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld of %2$lld days logged"
+            "value" : "已记录 %1$lld / %2$lld 天"
           }
         }
       }
@@ -894,6 +1126,7 @@
       }
     },
     "🥗" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1237,7 +1470,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "85%+ of goal"
+            "value" : "达到目标 85%+"
           }
         }
       }
@@ -1254,25 +1487,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A realistic win is better than an aggressive reset."
+            "value" : "Una meta realista es mejor que un reinicio agresivo."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A realistic win is better than an aggressive reset."
+            "value" : "Un risultato realistico è meglio di un reset aggressivo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A realistic win is better than an aggressive reset."
+            "value" : "無理なリセットより、現実的に達成できる一歩が大切です。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A realistic win is better than an aggressive reset."
+            "value" : "一个现实可完成的小目标，比激进重置更有效。"
           }
         }
       }
@@ -1359,25 +1592,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add Greek yogurt, eggs, tofu, or chicken for a +15g to +25g protein bump."
+            "value" : "Añade yogur griego, huevos, tofu o pollo para sumar entre 15g y 25g de proteína."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add Greek yogurt, eggs, tofu, or chicken for a +15g to +25g protein bump."
+            "value" : "Aggiungi yogurt greco, uova, tofu o pollo per aumentare le proteine di 15g-25g."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add Greek yogurt, eggs, tofu, or chicken for a +15g to +25g protein bump."
+            "value" : "ギリシャヨーグルト、卵、豆腐、鶏肉を加えると、たんぱく質を15g〜25g増やせます。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add Greek yogurt, eggs, tofu, or chicken for a +15g to +25g protein bump."
+            "value" : "加入希腊酸奶、鸡蛋、豆腐或鸡肉，可增加约 15g 到 25g 蛋白质。"
           }
         }
       }
@@ -1739,25 +1972,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aim for about %lldg protein in each main meal."
+            "value" : "Apunta a unos %lldg de proteína en cada comida principal."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aim for about %lldg protein in each main meal."
+            "value" : "Punta a circa %lldg di proteine in ogni pasto principale."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aim for about %lldg protein in each main meal."
+            "value" : "主食ごとに約 %lldg のたんぱく質を目指しましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aim for about %lldg protein in each main meal."
+            "value" : "每顿正餐尽量达到约 %lldg 蛋白质。"
           }
         }
       }
@@ -1828,6 +2061,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全部"
+          }
+        }
+      }
+    },
+    "Allow NutriScan to read Apple Health active energy and send helpful reminders for your daily routine." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow NutriScan to read Apple Health active energy and send helpful reminders for your daily routine."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que NutriScan lea la energía activa de Apple Health y envíe recordatorios útiles para tu rutina diaria."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a NutriScan di leggere l’energia attiva di Apple Salute e inviare promemoria utili per la routine quotidiana."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NutriScanがAppleヘルスケアのアクティブエネルギーを読み取り、毎日の習慣に役立つリマインダーを送信できるようにします。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许 NutriScan 读取 Apple 健康的活动能量，并发送有助于日常习惯的提醒。"
+          }
+        }
+      }
+    },
+    "Allow NutriScan to read Apple Health active energy so exercise calories can update your daily budget." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow NutriScan to read Apple Health active energy so exercise calories can update your daily budget."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que NutriScan lea la energía activa de Apple Health para actualizar las calorías de ejercicio en tu presupuesto diario."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a NutriScan di leggere l’energia attiva di Apple Salute per aggiornare le calorie di esercizio nel budget giornaliero."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NutriScanがAppleヘルスケアのアクティブエネルギーを読み取り、運動カロリーを毎日の予算に反映できるようにします。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许 NutriScan 读取 Apple 健康的活动能量，用于更新每日热量预算中的运动消耗。"
           }
         }
       }
@@ -2042,6 +2345,76 @@
         }
       }
     },
+    "Apple Health" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Health"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Health"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Salute"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appleヘルスケア"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple 健康"
+          }
+        }
+      }
+    },
+    "Auto-renewable subscription. Manage or cancel in App Store settings." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto-renewable subscription. Manage or cancel in App Store settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscripción autorrenovable. Gestiona o cancela en los ajustes de App Store."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbonamento con rinnovo automatico. Puoi gestirlo o annullarlo nelle impostazioni dell’App Store."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動更新サブスクリプションです。App Store設定で管理または解約できます。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动续订订阅。可在 App Store 设置中管理或取消。"
+          }
+        }
+      }
+    },
     "Average macros per logged day" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2107,7 +2480,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avg kcal"
+            "value" : "平均热量"
           }
         }
       }
@@ -2666,7 +3039,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calorie target"
+            "value" : "热量目标"
           }
         }
       }
@@ -2736,7 +3109,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calories are staying fairly steady across the selected period."
+            "value" : "所选周期内热量摄入基本稳定。"
           }
         }
       }
@@ -2771,7 +3144,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calories are trending down by %lld kcal across the selected period."
+            "value" : "所选周期内热量下降了 %lld 千卡。"
           }
         }
       }
@@ -2806,7 +3179,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calories are trending upward by %lld kcal across the selected period."
+            "value" : "所选周期内热量上升了 %lld 千卡。"
           }
         }
       }
@@ -3022,6 +3395,7 @@
       }
     },
     "Choose a meal photo first" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3790,6 +4164,41 @@
         }
       }
     },
+    "Connecting..." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectando..."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connessione..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続中..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在连接..."
+          }
+        }
+      }
+    },
     "Consistency target for this week" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3802,25 +4211,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consistency target for this week"
+            "value" : "Objetivo de constancia para esta semana"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consistency target for this week"
+            "value" : "Obiettivo di costanza per questa settimana"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consistency target for this week"
+            "value" : "今週の継続目標"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consistency target for this week"
+            "value" : "本周坚持目标"
           }
         }
       }
@@ -3856,6 +4265,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已摄入"
+          }
+        }
+      }
+    },
+    "Contact Us" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contact Us"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contactar"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contattaci"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お問い合わせ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "联系我们"
           }
         }
       }
@@ -4135,7 +4579,42 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "days completed"
+            "value" : "已完成天数"
+          }
+        }
+      }
+    },
+    "Debug Pro" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug Pro"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro de depuración"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro debug"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバッグ Pro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "调试会员"
           }
         }
       }
@@ -4170,7 +4649,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Delta"
+            "value" : "差值"
           }
         }
       }
@@ -4205,6 +4684,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "晚餐"
+          }
+        }
+      }
+    },
+    "Disable Simulated Pro" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disable Simulated Pro"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar Pro simulado"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva Pro simulato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模擬 Pro を無効化"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭模拟会员"
           }
         }
       }
@@ -4349,6 +4863,41 @@
         }
       }
     },
+    "Enable Simulated Pro" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Simulated Pro"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar Pro simulado"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva Pro simulato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模擬 Pro を有効化"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启模拟会员"
+          }
+        }
+      }
+    },
     "Estimate confidence" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4485,66 +5034,36 @@
       }
     },
     "Estimated portion: %@" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Estimated portion: %@"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated portion: %@"
           }
         },
         "es" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Porción estimada: %@"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porción estimada: %@"
           }
         },
         "it" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Porzione stimata: %@"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porzione stimata: %@"
           }
         },
         "ja" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "推定量: %@"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推定量：%@"
           }
         },
         "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "估算份量：%@"
-                }
-              }
-            }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "估算份量：%@"
           }
         }
       }
@@ -4615,6 +5134,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "运动"
+          }
+        }
+      }
+    },
+    "Expires on %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expires on %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vence el %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scade il %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@に期限切れ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "到期时间：%@"
           }
         }
       }
@@ -4736,25 +5290,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Favor oats, rice with protein, potatoes with yogurt sauce, or wraps with chicken."
+            "value" : "Prefiere avena, arroz con proteína, patatas con salsa de yogur o wraps con pollo."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Favor oats, rice with protein, potatoes with yogurt sauce, or wraps with chicken."
+            "value" : "Preferisci avena, riso con proteine, patate con salsa allo yogurt o wrap con pollo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Favor oats, rice with protein, potatoes with yogurt sauce, or wraps with chicken."
+            "value" : "オートミール、たんぱく質を添えたご飯、ヨーグルトソースのポテト、チキンラップなどがおすすめです。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Favor oats, rice with protein, potatoes with yogurt sauce, or wraps with chicken."
+            "value" : "优先选择燕麦、搭配蛋白质的米饭、配酸奶酱的土豆，或鸡肉卷饼。"
           }
         }
       }
@@ -5210,6 +5764,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "目标体重"
+          }
+        }
+      }
+    },
+    "Goal weight must be lower than current weight for a weight loss plan." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goal weight must be lower than current weight for a weight loss plan."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para un plan de pérdida de peso, el peso objetivo debe ser menor que el actual."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per un piano di dimagrimento, il peso obiettivo deve essere inferiore al peso attuale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "減量プランでは、目標体重を現在の体重より低く設定してください。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "减重计划中，目标体重必须低于当前体重。"
           }
         }
       }
@@ -5856,25 +6445,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keep the core meal, but trim sauces, oils, or sugary drinks first."
+            "value" : "Mantén la comida principal, pero reduce primero salsas, aceites o bebidas azucaradas."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keep the core meal, but trim sauces, oils, or sugary drinks first."
+            "value" : "Mantieni il pasto principale, ma riduci prima salse, oli o bevande zuccherate."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keep the core meal, but trim sauces, oils, or sugary drinks first."
+            "value" : "食事の中心は残しつつ、まずソース、油、甘い飲み物を減らしましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keep the core meal, but trim sauces, oils, or sugary drinks first."
+            "value" : "保留正餐主体，优先减少酱料、油脂或含糖饮料。"
           }
         }
       }
@@ -6100,25 +6689,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lighten the densest meal"
+            "value" : "Aligera la comida más densa"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lighten the densest meal"
+            "value" : "Alleggerisci il pasto più denso"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lighten the densest meal"
+            "value" : "最も高カロリーな食事を軽くする"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lighten the densest meal"
+            "value" : "优化热量最高的一餐"
           }
         }
       }
@@ -6328,7 +6917,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "先记录几天，才能看出趋势。"
+            "value" : "记录几天后即可查看趋势。"
           }
         }
       }
@@ -6345,25 +6934,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log at least 2 meals per day for the next 5 days."
+            "value" : "Registra al menos 2 comidas al día durante los próximos 5 días."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log at least 2 meals per day for the next 5 days."
+            "value" : "Registra almeno 2 pasti al giorno per i prossimi 5 giorni."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log at least 2 meals per day for the next 5 days."
+            "value" : "今後5日間、1日少なくとも2食を記録しましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log at least 2 meals per day for the next 5 days."
+            "value" : "接下来 5 天，每天至少记录 2 餐。"
           }
         }
       }
@@ -6380,25 +6969,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log breakfast, lunch, and dinner once to establish a pattern."
+            "value" : "Registra desayuno, comida y cena una vez para crear un patrón."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log breakfast, lunch, and dinner once to establish a pattern."
+            "value" : "Registra colazione, pranzo e cena almeno una volta per creare uno schema."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log breakfast, lunch, and dinner once to establish a pattern."
+            "value" : "朝食、昼食、夕食を一度ずつ記録して、傾向を作りましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Log breakfast, lunch, and dinner once to establish a pattern."
+            "value" : "先记录一次早餐、午餐和晚餐，建立基础模式。"
           }
         }
       }
@@ -6468,7 +7057,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Logging"
+            "value" : "记录"
           }
         }
       }
@@ -6747,7 +7336,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "餐食分布"
+            "value" : "餐次分布"
           }
         }
       }
@@ -6893,6 +7482,7 @@
       }
     },
     "Meal Type" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7242,6 +7832,7 @@
       }
     },
     "No recognized food data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7381,6 +7972,7 @@
       }
     },
     "Notes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7531,25 +8123,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NutriScan Pro unlocks AI-driven meal suggestions, better protein nudges, and weekly food coaching."
+            "value" : "NutriScan Pro desbloquea sugerencias de comidas con IA, mejores recordatorios de proteína y coaching semanal."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NutriScan Pro unlocks AI-driven meal suggestions, better protein nudges, and weekly food coaching."
+            "value" : "NutriScan Pro sblocca suggerimenti alimentari IA, consigli proteici migliori e coaching settimanale."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NutriScan Pro unlocks AI-driven meal suggestions, better protein nudges, and weekly food coaching."
+            "value" : "NutriScan Pro では、AIによる食事提案、たんぱく質のヒント、週間コーチングを利用できます。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NutriScan Pro unlocks AI-driven meal suggestions, better protein nudges, and weekly food coaching."
+            "value" : "NutriScan Pro 可解锁 AI 餐食建议、蛋白质提醒和每周营养指导。"
           }
         }
       }
@@ -7585,6 +8177,181 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "营养"
+          }
+        }
+      }
+    },
+    "Nutrition coaching endpoint is not deployed yet." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutrition coaching endpoint is not deployed yet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El endpoint de coaching nutricional aún no está desplegado."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'endpoint del coaching nutrizionale non è ancora distribuito."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "栄養コーチングのエンドポイントはまだデプロイされていません。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器还未部署营养建议接口，当前先显示本地建议。"
+          }
+        }
+      }
+    },
+    "Nutrition coaching is not configured." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutrition coaching is not configured."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El coaching nutricional no está configurado."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il coaching nutrizionale non è configurato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "栄養コーチングが設定されていません。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "营养建议服务尚未配置 DeepSeek。"
+          }
+        }
+      }
+    },
+    "Nutrition coaching model timed out." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutrition coaching model timed out."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El modelo de coaching nutricional agotó el tiempo de espera."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il modello di coaching nutrizionale ha superato il tempo limite."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "栄養コーチングモデルがタイムアウトしました。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "营养建议模型请求超时，请稍后重试。"
+          }
+        }
+      }
+    },
+    "Nutrition coaching suggestions are unavailable right now." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutrition coaching suggestions are unavailable right now."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las sugerencias de nutrición no están disponibles ahora."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suggerimenti nutrizionali non sono disponibili al momento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、栄養コーチングの提案は利用できません。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "营养建议暂时不可用。"
+          }
+        }
+      }
+    },
+    "Nutrition coaching suggestions require NutriScan Pro." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutrition coaching suggestions require NutriScan Pro."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las sugerencias de nutrición requieren NutriScan Pro."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suggerimenti nutrizionali richiedono NutriScan Pro."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "栄養コーチングの提案には NutriScan Pro が必要です。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "营养建议需要 NutriScan Pro。"
           }
         }
       }
@@ -7695,6 +8462,7 @@
       }
     },
     "OK" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -7863,7 +8631,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "P %1$lldg • C %2$lldg • F %3$lldg"
+            "value" : "蛋白质 %lldg • 碳水 %lldg • 脂肪 %lldg"
           }
         }
       }
@@ -7915,25 +8683,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pair starches with lean protein or beans to slow hunger rebound."
+            "value" : "Combina almidones con proteína magra o legumbres para retrasar el regreso del hambre."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pair starches with lean protein or beans to slow hunger rebound."
+            "value" : "Abbina gli amidi a proteine magre o legumi per rallentare il ritorno della fame."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pair starches with lean protein or beans to slow hunger rebound."
+            "value" : "でんぷん質の食品は低脂肪たんぱく質や豆類と組み合わせると、空腹の戻りを抑えやすくなります。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pair starches with lean protein or beans to slow hunger rebound."
+            "value" : "主食搭配瘦肉蛋白或豆类，可以减缓饥饿感回升。"
           }
         }
       }
@@ -7969,6 +8737,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记录越简单，越容易坚持。"
+          }
+        }
+      }
+    },
+    "Personalizing suggestions in the background." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalizing suggestions in the background."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalizando sugerencias en segundo plano."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalizzazione dei suggerimenti in background."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドで提案を最適化しています。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在后台生成个性化建议。"
           }
         }
       }
@@ -8009,6 +8812,7 @@
       }
     },
     "Photo ready for analysis" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8078,6 +8882,7 @@
       }
     },
     "Portion" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -8356,6 +9161,41 @@
         }
       }
     },
+    "Privacy Policy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de privacidad"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informativa sulla privacy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーポリシー"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私政策"
+          }
+        }
+      }
+    },
     "Private local analysis with basic estimation." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -8561,7 +9401,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Protein target"
+            "value" : "蛋白质目标"
           }
         }
       }
@@ -8613,25 +9453,95 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raise protein in %@"
+            "value" : "Aumenta la proteína en %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raise protein in %@"
+            "value" : "Aumenta le proteine in %@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raise protein in %@"
+            "value" : "%@ のたんぱく質を増やす"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raise protein in %@"
+            "value" : "提高%@的蛋白质"
+          }
+        }
+      }
+    },
+    "Rate NutriScan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rate NutriScan"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calificar NutriScan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valuta NutriScan"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NutriScanを評価"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给 NutriScan 评分"
+          }
+        }
+      }
+    },
+    "Rate Us" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rate Us"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Califícanos"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valutaci"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "評価する"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给我们评分"
           }
         }
       }
@@ -8846,6 +9756,41 @@
         }
       }
     },
+    "Retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riprova"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再試行"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试"
+          }
+        }
+      }
+    },
     "Review and adjust before saving" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -8998,25 +9943,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Review the Analysis tab after each day to spot calorie drift early."
+            "value" : "Revisa la pestaña Análisis cada día para detectar desviaciones de calorías a tiempo."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Review the Analysis tab after each day to spot calorie drift early."
+            "value" : "Controlla la scheda Analisi ogni giorno per notare presto eventuali derive caloriche."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Review the Analysis tab after each day to spot calorie drift early."
+            "value" : "毎日、分析タブを確認してカロリーのずれを早めに見つけましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Review the Analysis tab after each day to spot calorie drift early."
+            "value" : "每天结束后查看分析页，尽早发现热量偏移。"
           }
         }
       }
@@ -9579,6 +10524,41 @@
         }
       }
     },
+    "Set a goal weight below your current weight for a weight loss plan." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set a goal weight below your current weight for a weight loss plan."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define un peso objetivo menor que tu peso actual para un plan de pérdida de peso."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta un peso obiettivo inferiore al peso attuale per un piano di dimagrimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "減量プランを作成するには、目標体重を現在の体重より低く設定してください。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请将目标体重设为低于当前体重，才能生成减重计划。"
+          }
+        }
+      }
+    },
     "Set a target that feels realistic and sustainable." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9975,25 +10955,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start with 3 balanced meals"
+            "value" : "Empieza con 3 comidas equilibradas"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start with 3 balanced meals"
+            "value" : "Inizia con 3 pasti bilanciati"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start with 3 balanced meals"
+            "value" : "3食のバランス記録から始める"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start with 3 balanced meals"
+            "value" : "先从 3 餐均衡记录开始"
           }
         }
       }
@@ -10045,25 +11025,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steady energy with better carb pairing"
+            "value" : "Energía más estable con mejores combinaciones de carbohidratos"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steady energy with better carb pairing"
+            "value" : "Energia più stabile con migliori abbinamenti di carboidrati"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steady energy with better carb pairing"
+            "value" : "炭水化物の組み合わせでエネルギーを安定させる"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steady energy with better carb pairing"
+            "value" : "通过更好的碳水搭配稳定能量"
           }
         }
       }
@@ -10138,6 +11118,41 @@
         }
       }
     },
+    "Subscribe" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscribe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscribirse"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbonati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録する"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "订阅"
+          }
+        }
+      }
+    },
     "Subscription product not found. Check your product IDs in App Store Connect." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -10208,6 +11223,41 @@
         }
       }
     },
+    "Support" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soporte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supporto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持"
+          }
+        }
+      }
+    },
     "Swap one calorie-dense side for fruit, soup, or a vegetable volume add-on." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -10220,25 +11270,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Swap one calorie-dense side for fruit, soup, or a vegetable volume add-on."
+            "value" : "Cambia una guarnición densa en calorías por fruta, sopa o más verduras."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Swap one calorie-dense side for fruit, soup, or a vegetable volume add-on."
+            "value" : "Sostituisci un contorno calorico con frutta, zuppa o più verdure."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Swap one calorie-dense side for fruit, soup, or a vegetable volume add-on."
+            "value" : "高カロリーな副菜を果物、スープ、または野菜の追加に置き換えましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Swap one calorie-dense side for fruit, soup, or a vegetable volume add-on."
+            "value" : "把一个高热量配菜换成水果、汤，或增加蔬菜份量。"
           }
         }
       }
@@ -10274,6 +11324,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "如果你想获得更准确的建议，稍后可以同步活动和身体数据。"
+          }
+        }
+      }
+    },
+    "System" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sistema"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sistema"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システム"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随系统"
           }
         }
       }
@@ -10343,6 +11428,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "告诉我们一些你的情况"
+          }
+        }
+      }
+    },
+    "Terms of Use" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Términos de uso"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termini di utilizzo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用規約"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用条款"
           }
         }
       }
@@ -10552,7 +11672,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This result was analyzed by cloud AI and may still need manual edits."
+            "value" : "此结果由云端 AI 分析生成，保存前仍建议手动确认。"
           }
         }
       }
@@ -10657,7 +11777,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尝试其他关键词或清除当前筛选。"
+            "value" : "每天结束后查看分析页，尽早发现热量偏移。"
           }
         }
       }
@@ -10674,25 +11794,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try to include a protein source in each meal photo."
+            "value" : "Intenta incluir una fuente de proteína en cada foto de comida."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try to include a protein source in each meal photo."
+            "value" : "Cerca di includere una fonte proteica in ogni foto del pasto."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try to include a protein source in each meal photo."
+            "value" : "毎回の食事写真に、たんぱく質源を入れるようにしましょう。"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try to include a protein source in each meal photo."
+            "value" : "每张餐食照片里尽量包含一种蛋白质来源。"
           }
         }
       }
@@ -11218,6 +12338,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在使用云端 AI 以获得当前最佳识别质量。"
+          }
+        }
+      }
+    },
+    "Using local suggestions for now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Using local suggestions for now"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usando sugerencias locales por ahora"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uso temporaneo dei suggerimenti locali"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在はローカル提案を使用中"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂时使用本地建议"
           }
         }
       }
@@ -11777,7 +12932,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "within ±150 kcal"
+            "value" : "在 ±150 千卡内"
           }
         }
       }
@@ -11883,6 +13038,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的目标体重"
+          }
+        }
+      }
+    },
+    "Your meal log and photo analysis stay on-device. Apple Health active energy is read only for your calorie budget." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your meal log and photo analysis stay on-device. Apple Health active energy is read only for your calorie budget."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu registro de comidas y análisis de fotos permanecen en el dispositivo. La energía activa de Apple Health solo se usa para tu presupuesto calórico."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il diario dei pasti e l’analisi delle foto restano sul dispositivo. L’energia attiva di Apple Salute viene usata solo per il budget calorico."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "食事記録と写真分析はデバイス上に保存されます。Appleヘルスケアのアクティブエネルギーはカロリー予算にのみ使用されます。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的餐食记录和照片分析都会保留在本机。Apple 健康的活动能量仅用于热量预算。"
           }
         }
       }
