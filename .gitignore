@@ -18,6 +18,7 @@ xcuserdata/
 !.env.example
 auth.json
 *.mobileprovision
+GoogleService-Info.plist
 
 # Python
 __pycache__/
