@@ -60,12 +60,6 @@ final class AppFlowViewModel: ObservableObject {
     private static let freeAIScansRemainingKey = "nutriscan.free_ai_scans_remaining"
     private static let bodyDataReviewPromptedKey = "nutriscan.review.body_data_prompted"
     private static let defaultFreeAIScans = 2
-    #if DEBUG
-    private static let debugPremiumSimulationKey = "nutriscan.debug.premium_simulation"
-    private static let testAccountUnlimitedAIScans = true
-    #else
-    private static let testAccountUnlimitedAIScans = false
-    #endif
     private static let annualProductID = "com.liuzhigang.nutriscan.pro.annuala"
     private static let monthlyProductID = "com.liuzhigang.nutriscan.pro.monthlya"
     /// Discounted annual product surfaced only in the win-back offer. Entitles
@@ -175,9 +169,6 @@ final class AppFlowViewModel: ObservableObject {
     @Published var isEligibleForAnnualIntroOffer = true
     @Published var shouldRequestBodyDataReview = false
     @Published private(set) var freeAIScansRemaining = defaultFreeAIScans
-    #if DEBUG
-    @Published private(set) var isDebugPremiumSimulationEnabled = UserDefaults.standard.bool(forKey: debugPremiumSimulationKey)
-    #endif
 
     enum MainTab: String, CaseIterable {
         case today
@@ -338,23 +329,10 @@ final class AppFlowViewModel: ObservableObject {
         premiumExpirationDate = nil
         UserDefaults.standard.removeObject(forKey: Self.premiumPlanKey)
         UserDefaults.standard.removeObject(forKey: Self.premiumExpirationDateKey)
-        #if DEBUG
-        isDebugPremiumSimulationEnabled = false
-        UserDefaults.standard.set(false, forKey: Self.debugPremiumSimulationKey)
-        #endif
         if recognitionMode == .cloudPreferred {
             recognitionMode = .smartHybrid
         }
     }
-
-    #if DEBUG
-    func enableDebugPremiumSimulation() {
-        let expirationDate = Calendar.current.date(byAdding: .day, value: 30, to: Date())
-        activatePremium(plan: .monthly, expirationDate: expirationDate)
-        isDebugPremiumSimulationEnabled = true
-        UserDefaults.standard.set(true, forKey: Self.debugPremiumSimulationKey)
-    }
-    #endif
 
     var hasPremiumAnalytics: Bool {
         hasActivePremium
@@ -369,13 +347,10 @@ final class AppFlowViewModel: ObservableObject {
     }
 
     var canUseAIScan: Bool {
-        Self.testAccountUnlimitedAIScans || hasActivePremium || freeAIScansRemaining > 0
+        hasActivePremium || freeAIScansRemaining > 0
     }
 
     var aiScanAccessText: String {
-        guard !Self.testAccountUnlimitedAIScans else {
-            return AppLocalization.current("Unlimited AI scans included with Pro")
-        }
         guard !hasActivePremium else {
             return AppLocalization.current("Unlimited AI scans included with Pro")
         }
@@ -403,7 +378,6 @@ final class AppFlowViewModel: ObservableObject {
     }
 
     func consumeFreeAIScanIfNeeded(for analysis: FoodAnalysis) {
-        guard !Self.testAccountUnlimitedAIScans else { return }
         guard !hasActivePremium, analysis.source == .cloudAI, freeAIScansRemaining > 0 else { return }
         freeAIScansRemaining -= 1
         UserDefaults.standard.set(freeAIScansRemaining, forKey: Self.freeAIScansRemainingKey)

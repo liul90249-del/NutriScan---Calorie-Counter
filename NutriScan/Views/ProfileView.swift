@@ -211,22 +211,6 @@ struct ProfileView: View {
                 }
                 .buttonStyle(.plain)
             }
-
-            #if DEBUG
-            settingRow(title: "Debug Pro") {
-                Button {
-                    if flow.isDebugPremiumSimulationEnabled {
-                        flow.downgradeToFree()
-                    } else {
-                        flow.enableDebugPremiumSimulation()
-                    }
-                } label: {
-                    Text(localized(flow.isDebugPremiumSimulationEnabled ? "Disable Simulated Pro" : "Enable Simulated Pro"))
-                        .font(.subheadline.weight(.semibold))
-                }
-                .buttonStyle(.plain)
-            }
-            #endif
         }
     }
 

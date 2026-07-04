@@ -1,12 +1,16 @@
 import base64
+from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+import hmac
 import json
 import os
+import threading
+import time
 import urllib.error
 import urllib.request
 from typing import Any, Optional, Tuple
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 from openai import APITimeoutError, OpenAI
 
@@ -14,9 +18,21 @@ from openai import APITimeoutError, OpenAI
 app = FastAPI(title="NutriScan Food Recognition Proxy")
 
 provider = os.environ.get("AI_PROVIDER", "openai").strip().lower()
-client_bearer_token = os.environ["NUTRISCAN_CLIENT_TOKEN"]
+# Accept one or more comma-separated client tokens so the token can be rotated
+# without breaking already-shipped app versions.
+client_bearer_tokens = {
+    token.strip()
+    for token in os.environ["NUTRISCAN_CLIENT_TOKEN"].split(",")
+    if token.strip()
+}
+if not client_bearer_tokens:
+    raise RuntimeError("NUTRISCAN_CLIENT_TOKEN must contain at least one non-empty token.")
 max_image_bytes = int(os.environ.get("MAX_IMAGE_BYTES", str(6 * 1024 * 1024)))
-ai_request_timeout_seconds = float(os.environ.get("AI_REQUEST_TIMEOUT_SECONDS", "18"))
+ai_request_timeout_seconds = float(os.environ.get("AI_REQUEST_TIMEOUT_SECONDS", "45"))
+
+# Per-IP sliding-window rate limiting (in-memory; suitable for a single instance).
+_rate_limit_lock = threading.Lock()
+_rate_limit_hits: dict[str, deque] = defaultdict(deque)
 
 
 def build_client() -> Tuple[Optional[OpenAI], str]:
@@ -111,13 +127,58 @@ class CoachResponse(BaseModel):
     cards: list[CoachSuggestionCard] = Field(min_length=1, max_length=5)
 
 
+class WaterReminderRequest(BaseModel):
+    locale: str
+    profile: CoachUserProfile
+
+
+class WaterReminderItem(BaseModel):
+    timeOfDay: str
+    hour: int = Field(ge=0, le=23)
+    title: str
+    body: str
+
+
+class WaterReminderResponse(BaseModel):
+    reminders: list[WaterReminderItem] = Field(min_length=3, max_length=3)
+
+
 def require_bearer_token(authorization: Optional[str]) -> None:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail={"error": "unauthorized", "message": "Missing bearer token."})
 
     token = authorization.removeprefix("Bearer ").strip()
-    if token != client_bearer_token:
+    if not any(hmac.compare_digest(token, valid) for valid in client_bearer_tokens):
         raise HTTPException(status_code=401, detail={"error": "unauthorized", "message": "Invalid bearer token."})
+
+
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def enforce_rate_limit(request: Request, scope: str, max_requests: int, window_seconds: float) -> None:
+    key = f"{scope}:{_client_ip(request)}"
+    now = time.monotonic()
+    cutoff = now - window_seconds
+    with _rate_limit_lock:
+        hits = _rate_limit_hits[key]
+        while hits and hits[0] < cutoff:
+            hits.popleft()
+        if len(hits) >= max_requests:
+            retry_after = max(int(hits[0] + window_seconds - now) + 1, 1)
+            raise HTTPException(
+                status_code=429,
+                detail={"error": "rate_limited", "message": "Too many requests. Please slow down."},
+                headers={"Retry-After": str(retry_after)},
+            )
+        hits.append(now)
+        # Opportunistically drop idle IP buckets so the map cannot grow forever.
+        if len(_rate_limit_hits) > 5000:
+            for stale_key in [k for k, v in _rate_limit_hits.items() if not v or v[-1] < cutoff]:
+                del _rate_limit_hits[stale_key]
 
 
 def decode_image(image_base64: str) -> bytes:
@@ -226,11 +287,13 @@ def parse_model_json(raw_text: str) -> dict[str, Any]:
 def build_coach_prompt(payload: CoachRequest) -> str:
     profile = payload.profile.model_dump()
     meals = [meal.model_dump() for meal in payload.recentMeals]
+    target_language = language_name_for_locale(payload.locale)
     return f"""
 You are a practical nutrition coach for a calorie tracking app.
 Return strict JSON only. Do not include markdown.
 
 Locale hint: {payload.locale}
+Target language: {target_language}
 
 User profile JSON:
 {json.dumps(profile, ensure_ascii=False)}
@@ -241,7 +304,8 @@ Recent meals JSON:
 Rules:
 - This feature is for premium users, but do not mention payment, premium, or subscriptions.
 - Give safe, general nutrition coaching only. Do not diagnose disease, prescribe treatment, or make medical claims.
-- Use the user's locale language for all user-facing strings.
+- Use {target_language} for every user-facing string, including summary, nextGoal, card titles, subtitles, bullets, and suggestedFoods.
+- Do not mix languages or provide bilingual text. If the target language is Simplified Chinese, do not include English coaching phrases.
 - Base advice on the supplied profile and recent meals.
 - If recentMeals is empty, give starter goals and simple meal suggestions.
 - nextGoal must be one concrete goal for the next 24 hours.
@@ -275,6 +339,51 @@ JSON schema:
 """.strip()
 
 
+def language_name_for_locale(locale: str) -> str:
+    normalized = locale.lower()
+    if normalized.startswith("zh"):
+        return "Simplified Chinese"
+    if normalized.startswith("ja"):
+        return "Japanese"
+    if normalized.startswith("es"):
+        return "Spanish"
+    if normalized.startswith("it"):
+        return "Italian"
+    return "English"
+
+
+def default_coach_result(locale: str) -> dict[str, Any]:
+    if locale.lower().startswith("zh"):
+        return {
+            "summary": "这里是接下来可以优先执行的营养建议。",
+            "nextGoal": "下一餐先记录一份包含蛋白质、蔬菜和主食的均衡餐。",
+            "cards": [
+                {
+                    "title": "搭配一餐更均衡的正餐",
+                    "subtitle": "从蛋白质、蔬菜和稳定主食开始，更容易控制饥饿感。",
+                    "bullets": ["选择一种蛋白质来源。", "加入蔬菜或水果。", "主食和酱料保持适量。"],
+                    "suggestedFoods": ["鸡蛋", "豆腐", "鸡胸肉", "米饭碗", "沙拉"],
+                    "targetFocus": "consistency",
+                    "priority": "medium",
+                }
+            ],
+        }
+    return {
+        "summary": "Here are your next nutrition steps.",
+        "nextGoal": "Log your next balanced meal.",
+        "cards": [
+            {
+                "title": "Build a balanced next meal",
+                "subtitle": "Start with a protein source, vegetables, and a steady carbohydrate.",
+                "bullets": ["Choose one protein source.", "Add vegetables or fruit.", "Keep portions moderate."],
+                "suggestedFoods": ["eggs", "tofu", "chicken", "rice bowl", "salad"],
+                "targetFocus": "consistency",
+                "priority": "medium",
+            }
+        ],
+    }
+
+
 def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
     api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
@@ -296,6 +405,7 @@ def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
             ],
             response_format={"type": "json_object"},
             temperature=0.2,
+            max_tokens=int(os.environ.get("DEEPSEEK_COACH_MAX_TOKENS", "850")),
             timeout=ai_request_timeout_seconds,
         )
     except APITimeoutError:
@@ -310,7 +420,9 @@ def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
     return parse_model_json(content or "")
 
 
-def normalize_coach_result(result: dict[str, Any]) -> dict[str, Any]:
+def normalize_coach_result(result: dict[str, Any], locale: str) -> dict[str, Any]:
+    defaults = default_coach_result(locale)
+    default_card = defaults["cards"][0]
     cards = result.get("cards")
     if not isinstance(cards, list):
         cards = []
@@ -327,9 +439,9 @@ def normalize_coach_result(result: dict[str, Any]) -> dict[str, Any]:
             suggested_foods = []
         normalized_cards.append(
             {
-                "title": str(card.get("title", "Next nutrition step")).strip() or "Next nutrition step",
+                "title": str(card.get("title", default_card["title"])).strip() or default_card["title"],
                 "subtitle": str(card.get("subtitle", "")).strip(),
-                "bullets": [str(item).strip() for item in bullets if str(item).strip()][:4] or ["Review your next meal before saving."],
+                "bullets": [str(item).strip() for item in bullets if str(item).strip()][:4] or default_card["bullets"],
                 "suggestedFoods": [str(item).strip() for item in suggested_foods if str(item).strip()][:6],
                 "targetFocus": str(card.get("targetFocus", "consistency")).strip() or "consistency",
                 "priority": str(card.get("priority", "medium")).strip() or "medium",
@@ -337,22 +449,117 @@ def normalize_coach_result(result: dict[str, Any]) -> dict[str, Any]:
         )
 
     if not normalized_cards:
-        normalized_cards = [
-            {
-                "title": "Build a balanced next meal",
-                "subtitle": "Start with a protein source, vegetables, and a steady carbohydrate.",
-                "bullets": ["Choose one protein source.", "Add vegetables or fruit.", "Keep portions moderate."],
-                "suggestedFoods": ["eggs", "tofu", "chicken", "rice bowl", "salad"],
-                "targetFocus": "consistency",
-                "priority": "medium",
-            }
-        ]
+        normalized_cards = defaults["cards"]
 
     return {
-        "summary": str(result.get("summary", "Here are your next nutrition steps.")).strip(),
-        "nextGoal": str(result.get("nextGoal", "Log your next balanced meal.")).strip(),
+        "summary": str(result.get("summary", defaults["summary"])).strip() or defaults["summary"],
+        "nextGoal": str(result.get("nextGoal", defaults["nextGoal"])).strip() or defaults["nextGoal"],
         "cards": normalized_cards,
     }
+
+
+def build_water_reminder_prompt(payload: WaterReminderRequest) -> str:
+    return f"""
+You write short push notification copy for a calorie tracking app.
+
+User profile:
+- locale: {payload.locale}
+- gender: {payload.profile.gender}
+- weight: {payload.profile.weight}
+- goalWeight: {payload.profile.goalWeight}
+- activityLevel: {payload.profile.activityLevel}
+- weeklyLossRate: {payload.profile.weeklyLossRate}
+- unit: {payload.profile.unit}
+
+Return strict JSON only:
+{{
+  "reminders": [
+    {{"timeOfDay": "morning", "hour": 9, "title": "string", "body": "string"}},
+    {{"timeOfDay": "midday", "hour": 13, "title": "string", "body": "string"}},
+    {{"timeOfDay": "evening", "hour": 19, "title": "string", "body": "string"}}
+  ]
+}}
+
+Rules:
+- Match the locale language.
+- Make the three reminders different by time of day.
+- Keep title under 18 characters and body under 70 characters.
+- Be supportive, not medical. Do not mention disease or treatment.
+- Do not use emoji.
+""".strip()
+
+
+def default_water_reminders(locale: str) -> list[dict[str, Any]]:
+    if locale.startswith("zh"):
+        return [
+            {"timeOfDay": "morning", "hour": 9, "title": "早晨补水", "body": "起床后补一杯水，帮今天的记录有个稳定开始。"},
+            {"timeOfDay": "midday", "hour": 13, "title": "午间喝水", "body": "午餐前后喝点水，别把口渴误当成饥饿。"},
+            {"timeOfDay": "evening", "hour": 19, "title": "晚间补水", "body": "晚饭后少量补水，给今天的状态做个温和收尾。"},
+        ]
+    return [
+        {"timeOfDay": "morning", "hour": 9, "title": "Morning water", "body": "Start steady with a glass of water before the day gets busy."},
+        {"timeOfDay": "midday", "hour": 13, "title": "Midday sip", "body": "Take a water break before thirst starts looking like hunger."},
+        {"timeOfDay": "evening", "hour": 19, "title": "Evening reset", "body": "A small glass now helps you close the day with a steadier routine."},
+    ]
+
+
+def call_deepseek_water_reminder_provider(payload: WaterReminderRequest) -> dict[str, Any]:
+    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    if not api_key:
+        return {"reminders": default_water_reminders(payload.locale)}
+
+    base_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").strip()
+    model = os.environ.get("DEEPSEEK_COACH_MODEL", os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash"))
+    deepseek_client = OpenAI(api_key=api_key, base_url=base_url)
+
+    try:
+        response = deepseek_client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You return strict JSON for notification copy."},
+                {"role": "user", "content": build_water_reminder_prompt(payload)},
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.4,
+            timeout=ai_request_timeout_seconds,
+        )
+    except APITimeoutError:
+        raise
+    except Exception:
+        return {"reminders": default_water_reminders(payload.locale)}
+
+    content = response.choices[0].message.content if response.choices else ""
+    return parse_model_json(content or "")
+
+
+def normalize_water_reminders(result: dict[str, Any], locale: str) -> dict[str, Any]:
+    defaults = default_water_reminders(locale)
+    reminders = result.get("reminders")
+    if not isinstance(reminders, list):
+        reminders = []
+
+    normalized: list[dict[str, Any]] = []
+    fallback_by_time = {item["timeOfDay"]: item for item in defaults}
+    for index, time_of_day in enumerate(["morning", "midday", "evening"]):
+        source = next((item for item in reminders if isinstance(item, dict) and item.get("timeOfDay") == time_of_day), None)
+        fallback = fallback_by_time[time_of_day]
+        if source is None:
+            source = fallback
+        title = str(source.get("title", fallback["title"])).strip() or fallback["title"]
+        body = str(source.get("body", fallback["body"])).strip() or fallback["body"]
+        hour = source.get("hour", fallback["hour"])
+        if not isinstance(hour, int) or hour < 0 or hour > 23:
+            hour = fallback["hour"]
+        normalized.append(
+            {
+                "timeOfDay": time_of_day,
+                "hour": hour,
+                "title": title[:32],
+                "body": body[:120],
+            }
+        )
+
+    return {"reminders": normalized[:3]}
 
 
 def call_provider(image_bytes: bytes, locale: str) -> dict[str, Any]:
@@ -423,7 +630,7 @@ def call_google_provider(image_bytes: bytes, locale: str) -> dict[str, Any]:
         ],
         "generationConfig": {
             "temperature": 0.1,
-            "maxOutputTokens": int(os.environ.get("GOOGLE_MAX_OUTPUT_TOKENS", "2000")),
+            "maxOutputTokens": int(os.environ.get("GOOGLE_MAX_OUTPUT_TOKENS", "900")),
             "responseMimeType": "application/json",
             "thinkingConfig": {
                 "thinkingBudget": int(os.environ.get("GOOGLE_THINKING_BUDGET", "0")),
@@ -641,10 +848,13 @@ def health() -> dict[str, str]:
 @app.post("/food/analyze", response_model=AnalyzeResponse)
 def analyze_food(
     payload: AnalyzeRequest,
+    request: Request,
     authorization: Optional[str] = Header(default=None),
 ) -> AnalyzeResponse:
     require_bearer_token(authorization)
+    enforce_rate_limit(request, "food", max_requests=20, window_seconds=60)
     image_bytes = decode_image(payload.imageBase64)
+    started_at = time.perf_counter()
     executor = ThreadPoolExecutor(max_workers=1)
     try:
         future = executor.submit(call_provider, image_bytes, payload.locale)
@@ -656,6 +866,12 @@ def analyze_food(
         ) from exc
     finally:
         executor.shutdown(wait=False, cancel_futures=True)
+
+    elapsed_ms = int((time.perf_counter() - started_at) * 1000)
+    print(
+        f"food_analyze provider={provider} model={model_name} image_kb={len(image_bytes) // 1024} elapsed_ms={elapsed_ms}",
+        flush=True,
+    )
 
     try:
         return AnalyzeResponse(**result)
@@ -669,9 +885,11 @@ def analyze_food(
 @app.post("/coach/suggestions", response_model=CoachResponse)
 def coach_suggestions(
     payload: CoachRequest,
+    request: Request,
     authorization: Optional[str] = Header(default=None),
 ) -> CoachResponse:
     require_bearer_token(authorization)
+    enforce_rate_limit(request, "coach", max_requests=15, window_seconds=60)
     if not payload.profile.isPremium:
         raise HTTPException(
             status_code=403,
@@ -681,7 +899,7 @@ def coach_suggestions(
     executor = ThreadPoolExecutor(max_workers=1)
     try:
         future = executor.submit(call_deepseek_coach_provider, payload)
-        result = normalize_coach_result(future.result(timeout=ai_request_timeout_seconds))
+        result = normalize_coach_result(future.result(timeout=ai_request_timeout_seconds), payload.locale)
     except (APITimeoutError, FutureTimeoutError) as exc:
         raise HTTPException(
             status_code=504,
@@ -697,3 +915,23 @@ def coach_suggestions(
             status_code=500,
             detail={"error": "bad_model_response", "message": "Coach response shape did not match schema."},
         ) from exc
+
+
+@app.post("/notifications/water-reminders", response_model=WaterReminderResponse)
+def water_reminders(
+    payload: WaterReminderRequest,
+    request: Request,
+    authorization: Optional[str] = Header(default=None),
+) -> WaterReminderResponse:
+    require_bearer_token(authorization)
+    enforce_rate_limit(request, "water", max_requests=15, window_seconds=60)
+    executor = ThreadPoolExecutor(max_workers=1)
+    try:
+        future = executor.submit(call_deepseek_water_reminder_provider, payload)
+        result = normalize_water_reminders(future.result(timeout=ai_request_timeout_seconds), payload.locale)
+    except (APITimeoutError, FutureTimeoutError):
+        result = {"reminders": default_water_reminders(payload.locale)}
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+    return WaterReminderResponse(**result)

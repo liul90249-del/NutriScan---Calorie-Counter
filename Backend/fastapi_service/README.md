@@ -103,7 +103,7 @@ Set the app's internal client token to the same value as `NUTRISCAN_CLIENT_TOKEN
 ```bash
 curl -X POST http://127.0.0.1:8000/food/analyze \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer nutriscan-local-token" \
+  -H "Authorization: Bearer <your-strong-client-token>" \
   -d '{
     "imageBase64": "BASE64_IMAGE_HERE",
     "locale": "zh_CN",
@@ -138,7 +138,7 @@ GOOGLE_MODEL=gemini-2.5-flash
 GOOGLE_BASE_URL=https://generativelanguage.googleapis.com
 GOOGLE_MAX_OUTPUT_TOKENS=2000
 GOOGLE_THINKING_BUDGET=0
-NUTRISCAN_CLIENT_TOKEN=nutriscan-local-token
+NUTRISCAN_CLIENT_TOKEN=<your-strong-client-token>
 AI_REQUEST_TIMEOUT_SECONDS=30
 ```
 
@@ -217,7 +217,7 @@ AI_PROVIDER=anthropic
 ANTHROPIC_AUTH_TOKEN=your_deepseek_key
 ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
 ANTHROPIC_MODEL=deepseek-v4-flash
-NUTRISCAN_CLIENT_TOKEN=nutriscan-local-token
+NUTRISCAN_CLIENT_TOKEN=<your-strong-client-token>
 ```
 
 Then restart the service. The iOS app does not need any code change.
@@ -233,7 +233,7 @@ AI_PROVIDER=openai
 OPENAI_API_KEY=your_fox_api_key_here
 OPENAI_BASE_URL=https://dm-fox.rjj.cc/codex/v1
 OPENAI_MODEL=gpt-5.5
-NUTRISCAN_CLIENT_TOKEN=nutriscan-local-token
+NUTRISCAN_CLIENT_TOKEN=<your-strong-client-token>
 ```
 
 Then restart the service. In the iOS app build configuration, keep the internal endpoint pointed at your own backend, for example `http://<your-ip>:8000/food/analyze`, and set the internal client token to the same value as `NUTRISCAN_CLIENT_TOKEN`.
@@ -247,7 +247,7 @@ AI_PROVIDER=anthropic
 ANTHROPIC_AUTH_TOKEN=your_proxy_key
 ANTHROPIC_BASE_URL=https://code.newcli.com/claude/ultra
 ANTHROPIC_MODEL=claude-sonnet-4-5
-NUTRISCAN_CLIENT_TOKEN=nutriscan-local-token
+NUTRISCAN_CLIENT_TOKEN=<your-strong-client-token>
 ```
 
 Then restart the service. The iOS app still talks only to your NutriScan backend; end users do not install Claude CLI and do not enter provider keys.
