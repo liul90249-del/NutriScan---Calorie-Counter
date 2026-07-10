@@ -222,12 +222,15 @@ def image_media_type(image_bytes: bytes) -> str:
 
 
 def build_prompt(locale: str) -> str:
+    target_language = language_name_for_locale(locale)
     return f"""
 You are a nutrition vision assistant.
 Estimate the visible meal shown in the image and return strict JSON only.
 
 Rules:
 - Locale hint: {locale}
+- Target language: {target_language}
+- All user-visible text fields must be written in {target_language}.
 - Only identify food you can actually see with moderate confidence.
 - Do not invent restaurant names, branded meal names, or hidden ingredients.
 - If the dish is ambiguous, use a generic consumer-friendly name like "rice bowl", "noodle soup", or "mixed salad".
@@ -247,7 +250,7 @@ Rules:
 - portionDescription must be a short phrase like "1 medium bowl", "1 plate", or "small side portion".
 - portionDescription must not be empty when food is visible.
 - highlights must contain 2 to 4 short strings focused on portion, notable macros, or what should be reviewed.
-- Write foodName, highlights, identifiedItems, and portionDescription in the language implied by the locale hint.
+- Write foodName, highlights, identifiedItems, and portionDescription in {target_language}.
 - Never claim exactness. Never mention image recognition, AI, or model limitations.
 - If the image is too unclear to judge but food is present, still provide the safest generic estimate, set a low confidence, and set needsReview to true.
 - If there is no visible food, return foodName as "No visible food", calories 0, macros 0, low confidence, and needsReview true.
@@ -272,16 +275,57 @@ JSON schema:
 def parse_model_json(raw_text: str) -> dict[str, Any]:
     cleaned = raw_text.strip()
     if cleaned.startswith("```"):
-        cleaned = cleaned.strip("`")
-        cleaned = cleaned.replace("json\n", "", 1).strip()
+        cleaned = cleaned.strip("`").strip()
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:].strip()
 
     try:
         return json.loads(cleaned)
-    except json.JSONDecodeError as exc:
+    except json.JSONDecodeError:
+        extracted = extract_json_object(cleaned)
+        if extracted:
+            try:
+                return json.loads(extracted)
+            except json.JSONDecodeError:
+                pass
+
         raise HTTPException(
             status_code=500,
             detail={"error": "bad_model_response", "message": "Model did not return valid JSON."},
-        ) from exc
+        )
+
+
+def extract_json_object(text: str) -> str:
+    start = text.find("{")
+    if start == -1:
+        return ""
+
+    depth = 0
+    in_string = False
+    escape = False
+
+    for index in range(start, len(text)):
+        char = text[index]
+
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start : index + 1]
+
+    return ""
 
 
 def build_coach_prompt(payload: CoachRequest) -> str:
@@ -400,7 +444,7 @@ def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
         response = deepseek_client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": "You return strict JSON for a nutrition coaching app."},
+                {"role": "system", "content": "Return one valid JSON object only. Do not include markdown, code fences, comments, or explanatory text."},
                 {"role": "user", "content": build_coach_prompt(payload)},
             ],
             response_format={"type": "json_object"},
