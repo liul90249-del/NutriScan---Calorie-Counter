@@ -28,5 +28,7 @@ services:
         value: https://api.deepseek.com
       - key: DEEPSEEK_COACH_MODEL
         value: deepseek-v4-flash
+      - key: DEEPSEEK_COACH_MAX_TOKENS
+        value: "1800"
       - key: NUTRISCAN_CLIENT_TOKEN
         sync: false

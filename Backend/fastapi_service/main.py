@@ -449,7 +449,7 @@ def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
             ],
             response_format={"type": "json_object"},
             temperature=0.2,
-            max_tokens=int(os.environ.get("DEEPSEEK_COACH_MAX_TOKENS", "850")),
+            max_tokens=int(os.environ.get("DEEPSEEK_COACH_MAX_TOKENS", "1800")),
             timeout=ai_request_timeout_seconds,
         )
     except APITimeoutError:
