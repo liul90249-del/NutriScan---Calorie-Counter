@@ -16,6 +16,8 @@ from openai import APITimeoutError, OpenAI
 
 
 app = FastAPI(title="NutriScan Food Recognition Proxy")
+from partner_transactions import router as partner_router
+app.include_router(partner_router)
 
 provider = os.environ.get("AI_PROVIDER", "openai").strip().lower()
 # Accept one or more comma-separated client tokens so the token can be rotated

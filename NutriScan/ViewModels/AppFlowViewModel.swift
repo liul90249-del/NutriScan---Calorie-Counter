@@ -219,6 +219,7 @@ final class AppFlowViewModel: ObservableObject {
         }
         freeAIScansRemaining = UserDefaults.standard.integer(forKey: Self.freeAIScansRemainingKey)
 
+        Task { await PartnerTransactionOutbox.shared.flush() }
         Task {
             await refreshStoreKitState()
             await observeTransactions()
@@ -499,6 +500,7 @@ final class AppFlowViewModel: ObservableObject {
             switch result {
             case .success(let verification):
                 let transaction = try checkVerified(verification)
+                try await PartnerTransactionOutbox.shared.enqueue(verification)
                 applyEntitlement(for: transaction)
                 await transaction.finish()
                 AnalyticsService.logPurchaseCompleted(plan: plan)
@@ -599,6 +601,7 @@ final class AppFlowViewModel: ObservableObject {
     private func observeTransactions() async {
         for await result in Transaction.updates {
             guard let transaction = try? checkVerified(result) else { continue }
+            do { try await PartnerTransactionOutbox.shared.enqueue(result) } catch { continue }
             if isActiveEntitlement(transaction) {
                 applyEntitlement(for: transaction)
             } else {

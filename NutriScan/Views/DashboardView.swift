@@ -453,7 +453,7 @@ struct DashboardView: View {
         let safeTarget = max(target, 1)
         let safeCurrent = min(max(current, 0), safeTarget)
 
-        VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
                     .foregroundStyle(.secondary)
