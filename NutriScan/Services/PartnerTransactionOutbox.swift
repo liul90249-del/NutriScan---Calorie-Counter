@@ -37,7 +37,9 @@ actor PartnerTransactionOutbox {
         do {
             let result = try await AppTransaction.shared
             guard case .verified(let transaction) = result else { return }
-            let item = Item(transactionID: transaction.appTransactionID, signedTransaction: result.jwsRepresentation, isAppTransaction: true, environment: String(describing: transaction.environment))
+            guard transaction.environment == .production || transaction.environment == .sandbox else { return }
+            let environment = transaction.environment == .production ? "Production" : "Sandbox"
+            let item = Item(transactionID: transaction.appTransactionID, signedTransaction: result.jwsRepresentation, isAppTransaction: true, environment: environment)
             let identity = "app:" + String(describing: transaction.environment) + ":" + transaction.appTransactionID
             let key = SHA256.hash(data: Data(identity.utf8)).map { String(format: "%02x", $0) }.joined()
             let file = try directory().appendingPathComponent(key + ".json")
@@ -73,6 +75,10 @@ actor PartnerTransactionOutbox {
                       let ack = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                       ack["received"] as? Bool == true,
                       ack["transaction_id"] as? String == item.transactionID else { continue }
+                if isApp, let environment = item.environment, ack["installation"] is [String: Any] {
+                    let credential = try NutriScanInstallationCredential.loadOrCreate(appTransactionID: item.transactionID, environment: environment)
+                    Task { try? await NutriScanDeviceAttest.shared.verify(appTransactionID: item.transactionID, environment: environment, credential: credential) }
+                }
                 // Do not erase a newer revocation proof queued while uploading this file.
                 if try Data(contentsOf: file) == saved { try FileManager.default.removeItem(at: file) }
             } catch {
