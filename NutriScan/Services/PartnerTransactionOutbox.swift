@@ -5,7 +5,7 @@ import CryptoKit
 /// Stores only signed purchase proofs, never food logs or profile information.
 actor PartnerTransactionOutbox {
     static let shared = PartnerTransactionOutbox()
-    private let endpoint = URL(string: "https://nutriscan-ai-backend-1hq0.onrender.com/v1/partner/transactions")!
+    private let endpoint = URL(string: "https://squadlive.onrender.com/v1/partners/nutriscan/transactions")!
     private var flushing = false
     private struct Item: Codable, Equatable {
         let transactionID: String

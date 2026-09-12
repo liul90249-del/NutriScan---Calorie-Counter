@@ -1,3 +1,15 @@
+# Current deployment decision: shared backend
+
+The user selected reuse of the existing paid SquadLive service. Do not upgrade NutriScan's Free AI service or attach a new disk. The Python inbox below is retained as an alternative implementation, not the selected deployment.
+
+NutriScan App uploads now target `https://squadlive.onrender.com/v1/partners/nutriscan/transactions`. The selected notification target will be `https://squadlive.onrender.com/v1/partners/nutriscan/notifications` after the Node inbox is deployed. Existing SquadLive `/var/data` disk is 1 GB with daily snapshots; product/environment files are isolated.
+
+The Node implementation passed 25 tests and 4 local HTTP checks; the changed NutriScan upload target passed a full simulator build. Production main push was blocked by automatic approval review and still requires owner approval. No Apple notification configuration has been changed. No new recurring cost has been accepted or incurred. Referral binding and commission export are still incomplete.
+
+---
+
+## Previous alternative (not selected)
+
 # NutriScan transaction inbox — integration status
 
 The FastAPI app now mounts `/v1/partner/transactions` and `/v1/partner/notifications`.
