@@ -2,9 +2,15 @@
 
 The user selected reuse of the existing paid SquadLive service. Do not upgrade NutriScan's Free AI service or attach a new disk. The Python inbox below is retained as an alternative implementation, not the selected deployment.
 
-NutriScan App uploads now target `https://squadlive.onrender.com/v1/partners/nutriscan/transactions`. The selected notification target will be `https://squadlive.onrender.com/v1/partners/nutriscan/notifications` after the Node inbox is deployed. Existing SquadLive `/var/data` disk is 1 GB with daily snapshots; product/environment files are isolated.
+NutriScan App uploads now target `https://squadlive.onrender.com/v1/partners/nutriscan/transactions`. On 2026-09-12 the Node inbox was deployed and both Apple production and sandbox notification URLs were saved as `https://squadlive.onrender.com/v1/partners/nutriscan/notifications`. Existing SquadLive `/var/data` disk is 1 GB with daily snapshots; product/environment files are isolated.
 
-The Node implementation passed 25 tests and 4 local HTTP checks; the changed NutriScan upload target passed a full simulator build. Production main push was blocked by automatic approval review and still requires owner approval. No Apple notification configuration has been changed. No new recurring cost has been accepted or incurred. Referral binding and commission export are still incomplete.
+The Node implementation passed 25 tests and 4 local HTTP checks; the changed NutriScan upload target passed a full simulator build. Following explicit owner approval, commit f16e340 was pushed to production main and deployed. Live health reports `2026-09-12-shared-inbox-v5`; both NutriScan endpoints rejected invalid signatures with HTTP 400. No new recurring cost was incurred. Real Apple delivery, purchase, renewal and refund verification remain pending. Referral binding and commission export are still incomplete; collected transactions remain not_bound and commission_eligible:false. The updated NutriScan App has not been published.
+
+## Follow-up implementation (2026-09-12)
+
+The Node inbox now reserves a durable owner per subscription original transaction ID before writing receipts, including recovery from pre-index receipts. Another explicit account token is rejected; unowned historical subscriptions cannot be assigned to a later account. Missing renewal tokens preserve the reserved owner without enabling commission.
+
+`/v1/partners/nutriscan/app-transactions` accepts only Apple-verified app transactions and preserves the original App Store acquisition date. The Swift outbox collects verified `AppTransaction.shared` on startup, persists pending proof, and retries delivery. This date is not the first-use date; evidence is not an authentication credential. Identity and eligibility remain pending, and commission remains disabled. Backend: 31 tests passed. Client: simulator build passed. Client source is not an App Store release.
 
 ---
 

@@ -219,7 +219,10 @@ final class AppFlowViewModel: ObservableObject {
         }
         freeAIScansRemaining = UserDefaults.standard.integer(forKey: Self.freeAIScansRemainingKey)
 
-        Task { await PartnerTransactionOutbox.shared.flush() }
+        Task {
+            await PartnerTransactionOutbox.shared.flush()
+            await PartnerTransactionOutbox.shared.collectAppTransaction()
+        }
         Task {
             await refreshStoreKitState()
             await observeTransactions()
