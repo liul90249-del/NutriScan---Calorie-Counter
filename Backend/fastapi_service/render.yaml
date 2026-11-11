@@ -7,27 +7,23 @@ services:
     healthCheckPath: /health
     envVars:
       - key: AI_PROVIDER
-        value: google
-      - key: GOOGLE_MODEL
-        value: gemini-2.5-flash
-      - key: GOOGLE_BASE_URL
-        value: https://generativelanguage.googleapis.com
-      - key: GOOGLE_MAX_OUTPUT_TOKENS
-        value: "2000"
-      - key: GOOGLE_THINKING_BUDGET
-        value: "0"
+        value: openai
+      - key: OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+      - key: OPENAI_MODEL
+        value: gpt-5.5
       - key: MAX_IMAGE_BYTES
         value: "6291456"
       - key: AI_REQUEST_TIMEOUT_SECONDS
         value: "30"
-      - key: GOOGLE_API_KEY
+      - key: OPENAI_API_KEY
         sync: false
       - key: DEEPSEEK_API_KEY
         sync: false
       - key: DEEPSEEK_BASE_URL
         value: https://api.deepseek.com
       - key: DEEPSEEK_COACH_MODEL
-        value: deepseek-v4-flash
+        value: deepseek-flash
       - key: DEEPSEEK_COACH_MAX_TOKENS
         value: "1800"
       - key: NUTRISCAN_CLIENT_TOKEN

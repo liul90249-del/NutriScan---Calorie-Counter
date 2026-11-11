@@ -17,29 +17,7 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Set:
-
-- `AI_PROVIDER`: `google`, `gemini`, `openai`, `anthropic`, `claude`, `deepseek`, or `grok`
-- `GOOGLE_API_KEY`: your server-side Google AI Studio Gemini API key
-- `GOOGLE_MODEL`: default is `gemini-2.0-flash`; use `gemini-2.5-flash` when available
-- `GOOGLE_BASE_URL`: default is `https://generativelanguage.googleapis.com`
-- `GOOGLE_MAX_OUTPUT_TOKENS`: default is `2000`
-- `GOOGLE_THINKING_BUDGET`: default is `0` for concise JSON responses
-- `OPENAI_API_KEY`: your server-side OpenAI API key
-- `OPENAI_BASE_URL`: optional OpenAI-compatible proxy base URL, such as `https://dm-fox.rjj.cc/codex/v1`
-- `NUTRISCAN_CLIENT_TOKEN`: the bearer token used by your iOS app
-- `OPENAI_MODEL`: default is `gpt-4.1-mini`
-- `ANTHROPIC_AUTH_TOKEN`: your server-side Anthropic or Claude-compatible proxy key
-- `ANTHROPIC_BASE_URL`: default is `https://api.anthropic.com`; for the Ultra channel use `https://code.newcli.com/claude/ultra`
-- `ANTHROPIC_MODEL`: default is `claude-sonnet-4-5`
-- `DEEPSEEK_API_KEY`: your server-side DeepSeek API key
-- `DEEPSEEK_MODEL`: default is `deepseek-v4-flash`
-- `DEEPSEEK_BASE_URL`: default is `https://api.deepseek.com`
-- `GROK_API_KEY`: your server-side xAI API key
-- `GROK_MODEL`: default is `grok-2`
-- `GROK_BASE_URL`: default is `https://api.x.ai/v1`
-- `MAX_IMAGE_BYTES`: max allowed request image size
-- `AI_REQUEST_TIMEOUT_SECONDS`: max time to wait for the model provider before returning `504`
+Set `OPENAI_API_KEY` and `DEEPSEEK_API_KEY` to server-side credentials, and set `NUTRISCAN_CLIENT_TOKEN` to the bearer token used by the iOS app. The production configuration below supplies the model and endpoint defaults.
 
 ## 3. Start the server
 
@@ -55,15 +33,13 @@ Deploy this backend as a public HTTPS web service. Do not use your local Mac IP 
 Required production environment variables:
 
 ```bash
-AI_PROVIDER=google
-GOOGLE_API_KEY=your_google_ai_studio_key
-GOOGLE_MODEL=gemini-2.5-flash
-GOOGLE_BASE_URL=https://generativelanguage.googleapis.com
-GOOGLE_MAX_OUTPUT_TOKENS=2000
-GOOGLE_THINKING_BUDGET=0
+AI_PROVIDER=openai
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-5.5
 DEEPSEEK_API_KEY=your_deepseek_key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
-DEEPSEEK_COACH_MODEL=deepseek-v4-flash
+DEEPSEEK_COACH_MODEL=deepseek-flash
 NUTRISCAN_CLIENT_TOKEN=use_a_long_random_server_token
 MAX_IMAGE_BYTES=6291456
 AI_REQUEST_TIMEOUT_SECONDS=30
@@ -75,7 +51,7 @@ The included `Dockerfile` starts the service with:
 uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
 ```
 
-For Render, use `render.yaml` from this folder and set the secret values for `GOOGLE_API_KEY` and `NUTRISCAN_CLIENT_TOKEN` in the Render dashboard.
+For Render, use `render.yaml` from this folder and set the secret values for `OPENAI_API_KEY`, `DEEPSEEK_API_KEY`, and `NUTRISCAN_CLIENT_TOKEN` in the Render dashboard.
 
 After deployment, update the iOS app endpoint to:
 
@@ -125,24 +101,7 @@ curl -X POST http://127.0.0.1:8000/food/analyze \
 - Use a model/provider endpoint that supports image input. A text-only model may pass `/health` and simple text tests but time out on `/food/analyze`.
 - For production, add rate limiting, structured logging, and image compression.
 
-## Use Google Gemini
-
-For NutriScan food photo analysis, Gemini is the preferred image-capable option.
-
-In `.env`:
-
-```bash
-AI_PROVIDER=google
-GOOGLE_API_KEY=your_google_ai_studio_key
-GOOGLE_MODEL=gemini-2.5-flash
-GOOGLE_BASE_URL=https://generativelanguage.googleapis.com
-GOOGLE_MAX_OUTPUT_TOKENS=2000
-GOOGLE_THINKING_BUDGET=0
-NUTRISCAN_CLIENT_TOKEN=<your-strong-client-token>
-AI_REQUEST_TIMEOUT_SECONDS=30
-```
-
-Then restart the service. The iOS app does not need any code change; it still sends photos only to your NutriScan backend.
+Food photos use the OpenAI Responses API with portion-aware estimation. DeepSeek handles coaching and water-reminder copy. After deployment, check that `GET /health` reports `provider: openai`, `food_prompt: portion-aware-v1`, and `coach_provider: deepseek`, then verify each of the three request routes.
 
 ## Premium nutrition coaching with DeepSeek
 

@@ -18,6 +18,9 @@ from openai import APITimeoutError, OpenAI
 app = FastAPI(title="NutriScan Food Recognition Proxy")
 
 provider = os.environ.get("AI_PROVIDER", "openai").strip().lower()
+google_portion_aware_prompt = os.environ.get("GOOGLE_PORTION_AWARE_PROMPT") == "1"
+openai_portion_aware_prompt = provider == "openai"
+deepseek_coach_model = os.environ.get("DEEPSEEK_COACH_MODEL", os.environ.get("DEEPSEEK_MODEL", "deepseek-flash"))
 # Accept one or more comma-separated client tokens so the token can be rotated
 # without breaking already-shipped app versions.
 client_bearer_tokens = {
@@ -29,6 +32,7 @@ if not client_bearer_tokens:
     raise RuntimeError("NUTRISCAN_CLIENT_TOKEN must contain at least one non-empty token.")
 max_image_bytes = int(os.environ.get("MAX_IMAGE_BYTES", str(6 * 1024 * 1024)))
 ai_request_timeout_seconds = float(os.environ.get("AI_REQUEST_TIMEOUT_SECONDS", "45"))
+food_request_timeout_seconds = min(ai_request_timeout_seconds, 22) if provider == "openai" else ai_request_timeout_seconds
 
 # Per-IP sliding-window rate limiting (in-memory; suitable for a single instance).
 _rate_limit_lock = threading.Lock()
@@ -221,12 +225,24 @@ def image_media_type(image_bytes: bytes) -> str:
     return "image/jpeg"
 
 
-def build_prompt(locale: str) -> str:
+def build_prompt(locale: str, *, portion_aware: bool = False) -> str:
     target_language = language_name_for_locale(locale)
+    portion_rules = ""
+    zero_rule = "- Do not return zero calories or zero macros unless there is clearly no food in the image."
+    if portion_aware:
+        portion_rules = """
+Portion estimation procedure (return only the JSON result):
+- Count visible pieces or slices and estimate the amount actually shown. A single slice or partial plate is not a whole pizza or a standard restaurant serving.
+- Use visible dimensions, food depth, and trustworthy scale cues when available. Do not assume every plate or bowl has the same size, and do not infer an exact mass from an unscaled photo.
+- Estimate the amount and energy density of each major visible component separately, then sum their calories and macros. Check dense foods such as nuts, cheese, and visibly sauced foods even when they occupy little plate area.
+- Use realistic preparation assumptions without identifying hidden ingredients as visible. If oil, sauce, or scale could materially change the total, mark needsReview and describe the uncertainty briefly in a highlight.
+- Before returning totals, check for missed visible portions, duplicate counting, and major inconsistencies between the portion, calories, and macros.
+"""
+        zero_rule = "- For visible food return positive calories. Individual macros may be zero when appropriate."
     return f"""
 You are a nutrition vision assistant.
 Estimate the visible meal shown in the image and return strict JSON only.
-
+{portion_rules}
 Rules:
 - Locale hint: {locale}
 - Target language: {target_language}
@@ -237,7 +253,7 @@ Rules:
 - Prefer useful generic food labels over "unknown" when any edible food is visible.
 - Return nutrition totals only for the visible serving in the photo.
 - You must return a usable nutrition estimate for normal food photos, even when portion size is uncertain.
-- Do not return zero calories or zero macros unless there is clearly no food in the image.
+{zero_rule}
 - Protein, carbs, and fat are grams.
 - Calories are integer kcal.
 - Confidence is a number between 0 and 1.
@@ -437,17 +453,17 @@ def call_deepseek_coach_provider(payload: CoachRequest) -> dict[str, Any]:
         )
 
     base_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").strip()
-    model = os.environ.get("DEEPSEEK_COACH_MODEL", os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash"))
     deepseek_client = OpenAI(api_key=api_key, base_url=base_url)
 
     try:
         response = deepseek_client.chat.completions.create(
-            model=model,
+            model=deepseek_coach_model,
             messages=[
                 {"role": "system", "content": "Return one valid JSON object only. Do not include markdown, code fences, comments, or explanatory text."},
                 {"role": "user", "content": build_coach_prompt(payload)},
             ],
             response_format={"type": "json_object"},
+            extra_body={"thinking": {"type": "disabled"}},
             temperature=0.2,
             max_tokens=int(os.environ.get("DEEPSEEK_COACH_MAX_TOKENS", "1800")),
             timeout=ai_request_timeout_seconds,
@@ -553,17 +569,17 @@ def call_deepseek_water_reminder_provider(payload: WaterReminderRequest) -> dict
         return {"reminders": default_water_reminders(payload.locale)}
 
     base_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com").strip()
-    model = os.environ.get("DEEPSEEK_COACH_MODEL", os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash"))
     deepseek_client = OpenAI(api_key=api_key, base_url=base_url)
 
     try:
         response = deepseek_client.chat.completions.create(
-            model=model,
+            model=deepseek_coach_model,
             messages=[
                 {"role": "system", "content": "You return strict JSON for notification copy."},
                 {"role": "user", "content": build_water_reminder_prompt(payload)},
             ],
             response_format={"type": "json_object"},
+            extra_body={"thinking": {"type": "disabled"}},
             temperature=0.4,
             timeout=ai_request_timeout_seconds,
         )
@@ -623,13 +639,18 @@ def call_provider(image_bytes: bytes, locale: str) -> dict[str, Any]:
         return call_deepseek_provider(image_bytes, locale)
 
     media_type = image_media_type(image_bytes)
-    response = client.responses.create(
+    options = {}
+    request_client = client
+    if provider == "openai":
+        options = {"store": False, "text": {"format": {"type": "json_object"}}}
+        request_client = client.with_options(max_retries=0)
+    response = request_client.responses.create(
         model=model_name,
         input=[
             {
                 "role": "user",
                 "content": [
-                    {"type": "input_text", "text": build_prompt(locale)},
+                    {"type": "input_text", "text": build_prompt(locale, portion_aware=openai_portion_aware_prompt)},
                     {
                         "type": "input_image",
                         "image_url": f"data:{media_type};base64,{base64.b64encode(image_bytes).decode('utf-8')}",
@@ -637,7 +658,8 @@ def call_provider(image_bytes: bytes, locale: str) -> dict[str, Any]:
                 ],
             }
         ],
-        timeout=ai_request_timeout_seconds,
+        timeout=food_request_timeout_seconds,
+        **options,
     )
 
     return parse_model_json(response.output_text)
@@ -662,7 +684,7 @@ def call_google_provider(image_bytes: bytes, locale: str) -> dict[str, Any]:
             {
                 "role": "user",
                 "parts": [
-                    {"text": build_prompt(locale)},
+                    {"text": build_prompt(locale, portion_aware=google_portion_aware_prompt)},
                     {
                         "inline_data": {
                             "mime_type": media_type,
@@ -886,7 +908,15 @@ def normalize_result(result: dict[str, Any]) -> dict[str, Any]:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "provider": provider, "model": model_name}
+    portion_aware = openai_portion_aware_prompt or (provider in {"google", "gemini"} and google_portion_aware_prompt)
+    return {
+        "status": "ok",
+        "provider": provider,
+        "model": model_name,
+        "food_prompt": "portion-aware-v1" if portion_aware else "baseline",
+        "coach_provider": "deepseek",
+        "coach_model": deepseek_coach_model,
+    }
 
 
 @app.post("/food/analyze", response_model=AnalyzeResponse)
@@ -902,7 +932,7 @@ def analyze_food(
     executor = ThreadPoolExecutor(max_workers=1)
     try:
         future = executor.submit(call_provider, image_bytes, payload.locale)
-        result = normalize_result(future.result(timeout=ai_request_timeout_seconds))
+        result = normalize_result(future.result(timeout=food_request_timeout_seconds))
     except (APITimeoutError, FutureTimeoutError) as exc:
         raise HTTPException(
             status_code=504,
